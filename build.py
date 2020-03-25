@@ -2,7 +2,10 @@ import pandas as pd
 import numpy as np
 from anytree import Node, RenderTree
 from anytree.exporter import DotExporter
+from anytree.dotexport import RenderTreeGraph
 import sys
+import os
+import graphviz
 
 
 def build_kn(data, axis, count, node, dir):
@@ -32,7 +35,7 @@ def build_kn(data, axis, count, node, dir):
 
     # creation of root node of kd-tree
     if count == 0:
-        nodes.append(Node("root", axis=axis, value=b))
+        nodes.append(Node("root", axis=axis, value=b, layout='sfdp'))
     # creation of nodes
     elif len(data) >= 2:
         nodes.append(Node('l' + str(len(nodes)), parent=node, axis=axis, value=b, dir=dir))
@@ -71,7 +74,9 @@ def build_kn(data, axis, count, node, dir):
                           Source=pinr.iloc[0, 13]))
 
 
+import os
 
+os.environ["PATH"] += os.pathsep + 'C:\Program Files (x86)\Graphviz2.38\\bin\\'
 sys.setrecursionlimit(13000)
 nodes = []
 data = pd.read_csv("airports-extended.txt", sep=",", header=None)
@@ -79,5 +84,17 @@ data.columns = ["Airport ID", "Name", "City", "Country", "IATA", "ICAO", "Latitu
                 "Timezone", "DST", "Tz database time zone", "Type", "Source"]
 data.drop_duplicates(subset=("Latitude", "Longitude", "Altitude"), keep='first', inplace=True, ignore_index=True)
 build_kn(data, 6, 0, "root", "root")
+
 print("hello")
 DotExporter(nodes[0]).to_dotfile("root.dot")
+# DotExporter(nodes[0]).to_picture("root.png")
+from graphviz import Source
+Source.from_file('root.dot')
+from graphviz import render
+render('dot', 'png', 'root.dot')
+
+'''
+f = open("demofile3.txt", "w", encoding="utf-8")
+for pre, fill, node in RenderTree(nodes[0]):
+    f.write("%s%s" % (pre, node.name))
+f.close()'''
