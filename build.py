@@ -8,6 +8,7 @@ import os
 import graphviz
 
 
+nodes = []
 def build_kn(data, axis, count, node, dir):
     # sort the array by the axis that we use
     # and take an array only with the axis we will use
@@ -73,25 +74,6 @@ def build_kn(data, axis, count, node, dir):
                           DST=pinr.iloc[0, 10], Tz_database_time_zone=pinr.iloc[0, 11], Type=pinr.iloc[0, 12],
                           Source=pinr.iloc[0, 13]))
 
-
-import os
-
-os.environ["PATH"] += os.pathsep + 'C:\Program Files (x86)\Graphviz2.38\\bin\\'
-sys.setrecursionlimit(13000)
-nodes = []
-data = pd.read_csv("airports-extended.txt", sep=",", header=None)
-data.columns = ["Airport ID", "Name", "City", "Country", "IATA", "ICAO", "Latitude", "Longitude", "Altitude",
-                "Timezone", "DST", "Tz database time zone", "Type", "Source"]
-data.drop_duplicates(subset=("Latitude", "Longitude", "Altitude"), keep='first', inplace=True, ignore_index=True)
-build_kn(data, 6, 0, "root", "root")
-
-print("hello")
-DotExporter(nodes[0]).to_dotfile("root.dot")
-# DotExporter(nodes[0]).to_picture("root.png")
-from graphviz import Source
-Source.from_file('root.dot')
-from graphviz import render
-render('dot', 'png', 'root.dot')
 
 '''
 f = open("demofile3.txt", "w", encoding="utf-8")
