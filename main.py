@@ -14,7 +14,7 @@ while True:
     print("TYPE THE NUMBER OF THE CHOICE YOU WANT TO RUN")
     print("1. build tree (run this before the others)")
     print("2. search for a point (give x,y,z)")
-    print("3. DELETE")
+    print("3. delete by giving the point")
     print("4. EXIT")
     choice = input()
 
@@ -22,7 +22,7 @@ while True:
 
     if choice == "1":
         # take the data sheet from the file
-        data = pd.read_csv("airports-extendedall.txt", sep=",", header=None)
+        data = pd.read_csv("airports-extended20.txt", sep=",", header=None)
         data.columns = ["Airport ID", "Name", "City", "Country", "IATA", "ICAO", "Latitude", "Longitude", "Altitude",
                         "Timezone", "DST", "Tz database time zone", "Type", "Source"]
         # preprosesing of data by removing the duplicates
@@ -30,8 +30,9 @@ while True:
                              ignore_index=True)
         build_kn(data, 6, 0, "root", "root")
         # create files with the tree created
-        # DotExporter(nodes[0]).to_dotfile("root.dot")
-        # DotExporter(nodes[0]).to_picture("root.png")
+        DotExporter(nodes[0]).to_dotfile("root.dot")
+
+        DotExporter(nodes[0]).to_picture("root.png")
 
     # ===================================================================================================================
 
@@ -53,9 +54,14 @@ while True:
     # ===================================================================================================================
 
     elif choice == "3":
-        point = [nodes[5].Latitude, nodes[5].Longitude, nodes[5].Altitude]
-        delete(nodes[0], point)
-
+        #x = input()
+        #y = input()
+        #z = input()
+        #point = [x, y, z]
+        point = [nodes[6].Latitude, nodes[6].Longitude, nodes[6].Altitude]
+        del_node = delete(nodes[0], point)
+        DotExporter(nodes[0]).to_dotfile("delroot.dot")
+        DotExporter(nodes[0]).to_picture("delroot.png")
 
     else:
         break
