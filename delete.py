@@ -31,5 +31,5 @@ def delete(node_root, point):
     elif not node.siblings[0].is_leaf:
         del node.parent._NodeMixin__children[1]
 
-    node = []
+    del node
     return node
