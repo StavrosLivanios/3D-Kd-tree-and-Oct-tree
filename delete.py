@@ -4,7 +4,7 @@ from build import nodes
 from anytree import Node, RenderTree
 
 
-def delete(node_root, point):
+def delete_kn(node_root, point):
     node = search_kn(node_root, point)
 
     if node.siblings[0].is_leaf:

@@ -3,9 +3,9 @@ from anytree.exporter import DotExporter
 import os
 from build import build_kn, nodes
 from search import search_kn
-from delete import delete
+from delete import delete_kn
 from insert import insert_kn
-
+from update import update_kn
 os.environ["PATH"] += os.pathsep + 'C:\Program Files (x86)\Graphviz2.38\\bin\\'
 # sys.setrecursionlimit(13000)
 
@@ -17,7 +17,8 @@ while True:
     print("2. search for a point (give x,y,z)")
     print("3. delete by giving the point")
     print("4. INSERT")
-    print("5. EXIT")
+    print("5. UPDATE")
+    print("6. EXIT")
     choice = input()
 
     # ===================================================================================================================
@@ -35,7 +36,7 @@ while True:
         DotExporter(nodes[0]).to_dotfile("root.dot")
 
         DotExporter(nodes[0]).to_picture("root.png")
-
+        max_id = max(data.iloc[:, 0])
     # ===================================================================================================================
 
     elif choice == "2":
@@ -61,7 +62,7 @@ while True:
         # z = input()
         # point = [x, y, z]
         point = [nodes[26].Latitude, nodes[26].Longitude, nodes[26].Altitude]
-        del_node = delete(nodes[0], point)
+        del_node = delete_kn(nodes[0], point)
         DotExporter(nodes[0]).to_dotfile("delroot.dot")
         DotExporter(nodes[0]).to_picture("delroot.png")
 
@@ -70,7 +71,6 @@ while True:
         # y = input()
         # z = input()
         # point = [x, y, z]
-        max_id = max(data.iloc[:, 0])
         point = [nodes[26].Latitude, nodes[26].Longitude, nodes[26].Altitude]
         pin = [1111111, "siouta diplomatikh", "patra", "ellda", "gr2", nodes[26].Latitude,  nodes[26].Longitude,  nodes[26].Altitude, 1, -2, "a", "geia", "af", "af",
                "af"]
@@ -79,6 +79,17 @@ while True:
         print(insert_kn(nodes[0], point, pin, int(max_id)))
         DotExporter(nodes[0]).to_dotfile("insroot.dot")
         DotExporter(nodes[0]).to_picture("insroot.png")
+
+    elif choice == "5":
+
+        point = [nodes[26].Latitude, nodes[26].Longitude, nodes[26].Altitude]
+        data = "Name = kkkakkakakakakaka , Latitude=1111"
+        res = update_kn(nodes[0], data, point, max_id)
+        print(res)
+        DotExporter(nodes[0]).to_dotfile("updroot.dot")
+        DotExporter(nodes[0]).to_picture("updroot.png")
+
+
     else:
         break
 
