@@ -4,18 +4,20 @@ import os
 from build import build_kn, nodes
 from search import search_kn
 from delete import delete
+from insert import insert_kn
 
 os.environ["PATH"] += os.pathsep + 'C:\Program Files (x86)\Graphviz2.38\\bin\\'
 # sys.setrecursionlimit(13000)
 
-
+max_id = 0
 while True:
     print("THIS IS A MENU")
     print("TYPE THE NUMBER OF THE CHOICE YOU WANT TO RUN")
     print("1. build tree (run this before the others)")
     print("2. search for a point (give x,y,z)")
     print("3. delete by giving the point")
-    print("4. EXIT")
+    print("4. INSERT")
+    print("5. EXIT")
     choice = input()
 
     # ===================================================================================================================
@@ -54,18 +56,31 @@ while True:
     # ===================================================================================================================
 
     elif choice == "3":
-        #x = input()
-        #y = input()
-        #z = input()
-        #point = [x, y, z]
-        point = [nodes[6].Latitude, nodes[6].Longitude, nodes[6].Altitude]
+        # x = input()
+        # y = input()
+        # z = input()
+        # point = [x, y, z]
+        point = [nodes[26].Latitude, nodes[26].Longitude, nodes[26].Altitude]
         del_node = delete(nodes[0], point)
         DotExporter(nodes[0]).to_dotfile("delroot.dot")
         DotExporter(nodes[0]).to_picture("delroot.png")
 
+    elif choice == "4":
+        # x = input()
+        # y = input()
+        # z = input()
+        # point = [x, y, z]
+        max_id = max(data.iloc[:, 0])
+        point = [nodes[26].Latitude, nodes[26].Longitude, nodes[26].Altitude]
+        pin = [1111111, "siouta diplomatikh", "patra", "ellda", "gr2", nodes[26].Latitude,  nodes[26].Longitude,  nodes[26].Altitude, 1, -2, "a", "geia", "af", "af",
+               "af"]
+        #point = [64.2833023071289, -14.401399612426758, 75]
+        point = [nodes[26].Latitude, nodes[26].Longitude, nodes[26].Altitude]
+        print(insert_kn(nodes[0], point, pin, int(max_id)))
+        DotExporter(nodes[0]).to_dotfile("insroot.dot")
+        DotExporter(nodes[0]).to_picture("insroot.png")
     else:
         break
-
 
 '''
 from graphviz import Source
