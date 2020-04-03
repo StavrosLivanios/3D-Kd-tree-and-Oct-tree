@@ -2,7 +2,8 @@ import pandas as pd
 import numpy as np
 from anytree import Node, RenderTree
 
-def search_kn(nodes, point):
+
+def search(nodes, point):
     if nodes.is_leaf:
         if float(nodes.Latitude) - float(point[0]) < 10**-6 and float(nodes.Longitude) - float(point[1])< 10**-6 and float(nodes.Altitude) - float(point[2])< 10**-6:
             res = nodes
@@ -10,15 +11,12 @@ def search_kn(nodes, point):
             res = False
     else:
         axis = nodes.depth % 3
-        if float(nodes.value) >= float(point[axis]):
-            if len(nodes.children) == 0:
-                return False
+        if round(float(nodes.value), 4) >= round(float(point[axis]), 4):
             child = nodes.children[0]
-        elif float(nodes.value) < float(point[axis]):
-            if len(nodes.children) == 1:
-                return False
+        elif round(float(nodes.value), 4) < round(float(point[axis]), 4):
             child = nodes.children[1]
 
-        res = search_kn(child, point)
+        res = search(child, point)
 
     return res
+

@@ -1,11 +1,15 @@
 import pandas as pd
 from anytree.exporter import DotExporter
 import os
-from build import build_kn, nodes
-from search import search_kn
-from delete import delete_kn
-from insert import insert_kn
-from update import update_kn
+import ast
+from build import build_kd, nodes
+from search import search
+from delete import delete_kd
+from insert import insert_kd
+from update import update_kd
+from anytree.exporter import DictExporter
+from anytree.importer import DictImporter
+
 os.environ["PATH"] += os.pathsep + 'C:\Program Files (x86)\Graphviz2.38\\bin\\'
 # sys.setrecursionlimit(13000)
 
@@ -18,25 +22,28 @@ while True:
     print("3. delete by giving the point")
     print("4. INSERT")
     print("5. UPDATE")
-    print("6. EXIT")
+    print("6. EXPORT")
+    print("7. INPORT")
+    print("8. EXIT")
     choice = input()
 
     # ===================================================================================================================
 
     if choice == "1":
         # take the data sheet from the file
-        data = pd.read_csv("airports-extended20.txt", sep=",", header=None)
+        data = pd.read_csv("airports-extended1000.txt", sep=",", header=None)
         data.columns = ["Airport ID", "Name", "City", "Country", "IATA", "ICAO", "Latitude", "Longitude", "Altitude",
                         "Timezone", "DST", "Tz database time zone", "Type", "Source"]
+
         # preprosesing of data by removing the duplicates
         data.drop_duplicates(subset=("Latitude", "Longitude", "Altitude"), keep='first', inplace=True,
                              ignore_index=True)
-        build_kn(data, 6, 0, "root", "root")
-        # create files with the tree created
-        DotExporter(nodes[0]).to_dotfile("root.dot")
-
-        DotExporter(nodes[0]).to_picture("root.png")
+        build_kd(data, 6, 0, "root", "root")
         max_id = max(data.iloc[:, 0])
+
+        # create files with the tree created
+    #        DotExporter(nodes[0]).to_dotfile("root.dot")
+    #        DotExporter(nodes[0]).to_picture("root.png")
     # ===================================================================================================================
 
     elif choice == "2":
@@ -44,58 +51,89 @@ while True:
         if len(nodes) == 0:
             print("THERE IS NO DATA")
         else:
-            print("GIVE THE POINT YOU WANT TO SEARCH FOR")
+            print("GIVE THE POINT YOU WANT TO SEARCH FOR as x,y,z")
             x = input()
-            y = input()
-            z = input()
-            axis = [x, y, z]
-            res = search_kn(nodes[0], axis)
+            x = x.replace(" ", "")
+            x = x.split(",")
+            point = [float(x[0]), float(x[1]), float(x[2])]
+            axis = point
+            res = search(nodes[0], axis)
             if not res:
                 print("The point doesn't exist")
             else:
                 print(res.Name)
+                DotExporter(res.parent.parent.parent).to_picture("search.png")
+
     # ===================================================================================================================
 
     elif choice == "3":
-        # x = input()
-        # y = input()
-        # z = input()
-        # point = [x, y, z]
-        point = [nodes[26].Latitude, nodes[26].Longitude, nodes[26].Altitude]
-        del_node = delete_kn(nodes[0], point)
-        DotExporter(nodes[0]).to_dotfile("delroot.dot")
-        DotExporter(nodes[0]).to_picture("delroot.png")
+        print("give the x,y,z of the point you want to delete")
+        x = input()
+        x = x.replace(" ", "")
+        x = x.split(",")
+        point = [float(x[0]), float(x[1]), float(x[2])]
 
+        # point = [nodes[26].Latitude, nodes[26].Longitude, nodes[26].Altitude]
+        # point = [-23.246700286865234,131.9029998779297,620]
+
+        res = del_node = delete_kd(nodes[0], point)
+        DotExporter(res.parent.parent.parent).to_picture("delete.png")
+    # ===================================================================================================================
     elif choice == "4":
-        # x = input()
-        # y = input()
-        # z = input()
-        # point = [x, y, z]
-        point = [nodes[26].Latitude, nodes[26].Longitude, nodes[26].Altitude]
-        pin = [1111111, "siouta diplomatikh", "patra", "ellda", "gr2", nodes[26].Latitude,  nodes[26].Longitude,  nodes[26].Altitude, 1, -2, "a", "geia", "af", "af",
-               "af"]
-        #point = [64.2833023071289, -14.401399612426758, 75]
-        point = [nodes[26].Latitude, nodes[26].Longitude, nodes[26].Altitude]
-        print(insert_kn(nodes[0], point, pin, int(max_id)))
-        DotExporter(nodes[0]).to_dotfile("insroot.dot")
-        DotExporter(nodes[0]).to_picture("insroot.png")
+        print("give the data of the insert separating them with  ,  (dont give id)")
+        pin = input()
+        pin = pin.replace("\"", "")
+        pin = pin.split(",")
+
+        point = [float(pin[5]), float(pin[6]), float(pin[7])]
+
+        # point = [nodes[26].Latitude, nodes[26].Longitude, nodes[26].Altitude]
+        # pin = [1111111, "siouta diplomatikh", "patra", "ellda", "gr2", nodes[26].Latitude,  nodes[26].Longitude,  nodes[26].Altitude, 1, -2, "a", "geia", "af", "af", "af"]
+        # point = [64.2833023071289, -14.401399612426758, 75]
+        # point = [nodes[26].Latitude, nodes[26].Longitude, nodes[26].Altitude]
+
+        res = insert_kd(nodes[0], point, pin, int(max_id))
+        print(res.name)
+        if not res == False:
+            DotExporter(res.parent.parent.parent).to_picture("insert.png")
+        print()
+    # ===================================================================================================================
 
     elif choice == "5":
 
-        point = [nodes[26].Latitude, nodes[26].Longitude, nodes[26].Altitude]
-        data = "Name = kkkakkakakakakaka , Latitude=1111"
-        res = update_kn(nodes[0], data, point, max_id)
-        print(res)
-        DotExporter(nodes[0]).to_dotfile("updroot.dot")
-        DotExporter(nodes[0]).to_picture("updroot.png")
+        print("give the x,y,z of the point you want to update")
+        x = input()
+        x = x.replace(" ", "")
+        x = x.split(",")
+        point = [float(x[0]), float(x[1]), float(x[2])]
 
+        print("give the data of the update separating them with  ,  with nthename of the datasheet names")
+        pin = input()
+        # point = [nodes[6].Latitude, nodes[6].Longitude, nodes[6].Altitude]
+        # point = [51.444166,7.088929,222]
+        # data = "Name = skata , Latitude=2, Longtitude = 2, Altitude = 2"
 
+        res = update_kd(nodes[0], data, point, max_id)
+
+        DotExporter(res.parent.parent.parent).to_picture("update.png")
+
+    # ===================================================================================================================
+
+    elif choice == "6":
+        exporter = DictExporter()
+        data2 = exporter.export(nodes[0])
+        importer = DictImporter()
+        f = open("kd_export.txt", "w", encoding="utf-8")
+        f.write(str(data2))
+        f.close()
+
+    # ===================================================================================================================
+
+    elif choice == "7":
+
+        dict = ast.literal_eval(open("kd_export.txt", encoding="utf-8").read())
+        nodes[0] = importer.import_(dict)
+
+    # ===================================================================================================================
     else:
         break
-
-'''
-from graphviz import Source
-Source.from_file('root.dot')
-from graphviz import render
-render('dot', 'png', 'root.dot')
-'''

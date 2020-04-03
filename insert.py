@@ -2,7 +2,7 @@ from build import nodes
 from anytree import Node
 
 
-def insert_kn(node_root, point, ins_data, max_id):
+def insert_kd(node_root, point, ins_data, max_id):
     max_id = max_id + 1
     if node_root.is_leaf:
         if float(node_root.Latitude) - float(point[0]) < 10 ** -6 and float(node_root.Longitude) - float(
@@ -40,14 +40,14 @@ def insert_kn(node_root, point, ins_data, max_id):
                 node_root.dir = "right"
                 node_root.name = "leaf_" + node_root.dir + " " + node_root.name.split()[1]
                 nodes.append(
-                    Node('leaf_Left ' + str(max_id), parent=node_root.parent, dir="left", Airport_ID=ins_data[0],
-                         Name=ins_data[1], City=ins_data[2], Country=ins_data[3],
-                         IATA=ins_data[4],
-                         ICAO=ins_data[5],
-                         Latitude=ins_data[6], Longitude=ins_data[7], Altitude=ins_data[8],
-                         Timezone=ins_data[9],
-                         DST=ins_data[10], Tz_database_time_zone=ins_data[11], Type=ins_data[12],
-                         Source=ins_data[13]))
+                    Node('leaf_Left ' + str(max_id), parent=node_root.parent, dir="left", Airport_ID=max_id,
+                         Name=ins_data[0], City=ins_data[1], Country=ins_data[2],
+                         IATA=ins_data[3],
+                         ICAO=ins_data[4],
+                         Latitude=ins_data[5], Longitude=ins_data[6], Altitude=ins_data[7],
+                         Timezone=ins_data[8],
+                         DST=ins_data[9], Tz_database_time_zone=ins_data[10], Type=ins_data[11],
+                         Source=ins_data[12]))
 
                 temp = new_node._NodeMixin__children[1]
                 new_node._NodeMixin__children[1] = new_node._NodeMixin__children[0]
@@ -68,45 +68,45 @@ def insert_kn(node_root, point, ins_data, max_id):
                 node_root.name = "leaf_" + node_root.dir + " " + node_root.name.split()[1]
 
                 nodes.append(
-                    Node('leaf_right ' + str(max_id), parent=node_root.parent, dir="right", Airport_ID=ins_data[0],
-                         Name=ins_data[1], City=ins_data[2], Country=ins_data[3],
-                         IATA=ins_data[4],
-                         ICAO=ins_data[5],
-                         Latitude=ins_data[6], Longitude=ins_data[7], Altitude=ins_data[8],
-                         Timezone=ins_data[9],
-                         DST=ins_data[10], Tz_database_time_zone=ins_data[11], Type=ins_data[12],
-                         Source=ins_data[13]))
+                    Node('leaf_right ' + str(max_id), parent=node_root.parent, dir="right", Airport_ID=max_id,
+                         Name=ins_data[0], City=ins_data[1], Country=ins_data[2],
+                         IATA=ins_data[3],
+                         ICAO=ins_data[4],
+                         Latitude=ins_data[5], Longitude=ins_data[6], Altitude=ins_data[7],
+                         Timezone=ins_data[8],
+                         DST=ins_data[9], Tz_database_time_zone=ins_data[10], Type=ins_data[11],
+                         Source=ins_data[12]))
                 print()
             res = new_node
     else:
         axis = node_root.depth % 3
-        if float(node_root.value) >= float(point[axis]):
+        if round(float(node_root.value), 4) >= round(float(point[axis]), 4):
             if len(node_root.children) == 0:
-                new_node = Node('leaf_Left ' + str(max_id), parent=node_root, dir="left", Airport_ID=ins_data[0],
-                         Name=ins_data[1], City=ins_data[2], Country=ins_data[3],
-                         IATA=ins_data[4],
-                         ICAO=ins_data[5],
-                         Latitude=ins_data[6], Longitude=ins_data[7], Altitude=ins_data[8],
-                         Timezone=ins_data[9],
-                         DST=ins_data[10], Tz_database_time_zone=ins_data[11], Type=ins_data[12],
-                         Source=ins_data[13])
-                nodes.append(new_node)
-                return new_node
+                node_root._NodeMixin__children[0] = nodes.append(
+                    Node('leaf_Left ' + str(max_id), parent=node_root, dir="left", Airport_ID=max_id,
+                         Name=ins_data[0], City=ins_data[1], Country=ins_data[2],
+                         IATA=ins_data[3],
+                         ICAO=ins_data[4],
+                         Latitude=ins_data[5], Longitude=ins_data[6], Altitude=ins_data[7],
+                         Timezone=ins_data[8],
+                         DST=ins_data[9], Tz_database_time_zone=ins_data[10], Type=ins_data[11],
+                         Source=ins_data[12]))
+                return node_root._NodeMixin__children[0]
             child = node_root.children[0]
-        elif float(node_root.value) < float(point[axis]):
+        elif round(float(node_root.value), 4) < round(float(point[axis]), 4):
             if len(node_root.children) == 1:
-                new_node = Node('leaf_Right ' + str(max_id), parent=node_root, dir="right", Airport_ID=ins_data[0],
-                         Name=ins_data[1], City=ins_data[2], Country=ins_data[3],
-                         IATA=ins_data[4],
-                         ICAO=ins_data[5],
-                         Latitude=ins_data[6], Longitude=ins_data[7], Altitude=ins_data[8],
-                         Timezone=ins_data[9],
-                         DST=ins_data[10], Tz_database_time_zone=ins_data[11], Type=ins_data[12],
-                         Source=ins_data[13])
-                nodes.append(new_node)
-                return new_node
+                node_root._NodeMixin__children[1] = nodes.append(
+                    Node('leaf_Right ' + str(max_id), parent=node_root, dir="right", Airport_ID=max_id,
+                         Name=ins_data[0], City=ins_data[1], Country=ins_data[2],
+                         IATA=ins_data[3],
+                         ICAO=ins_data[4],
+                         Latitude=ins_data[5], Longitude=ins_data[6], Altitude=ins_data[7],
+                         Timezone=ins_data[8],
+                         DST=ins_data[9], Tz_database_time_zone=ins_data[10], Type=ins_data[11],
+                         Source=ins_data[12]))
+                return node_root._NodeMixin__children[1]
             child = node_root.children[1]
 
-        res = insert_kn(child, point, ins_data, max_id)
+        res = insert_kd(child, point, ins_data, max_id)
 
     return res

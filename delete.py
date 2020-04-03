@@ -1,11 +1,11 @@
 from anytree.exporter import DotExporter
-from search import search_kn
+from search import search
 from build import nodes
 from anytree import Node, RenderTree
 
 
-def delete_kn(node_root, point):
-    node = search_kn(node_root, point)
+def delete_kd(node_root, point):
+    node = search(node_root, point)
 
     if node.siblings[0].is_leaf:
         if node.dir == 'left':
