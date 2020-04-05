@@ -111,15 +111,15 @@ while True:
         point = [float(x[0]), float(x[1]), float(x[2])]
 
         print("give the data of the update separating them with  ,  with nthename of the datasheet names")
-        pin = input()
+        data_upt = input()
         # point = [nodes[6].Latitude, nodes[6].Longitude, nodes[6].Altitude]
         # point = [51.444166,7.088929,222]
         # data = "Name = skata , Latitude=2, Longtitude = 2, Altitude = 2"
 
-        res = update_kd(nodes[0], data, point, max_id)
+        res = update_kd(nodes[0], data_upt, point, max_id)
 
         DotExporter(res.parent.parent).to_picture("update.png")
-
+        print()
     # ===================================================================================================================
 
     elif choice == "6":

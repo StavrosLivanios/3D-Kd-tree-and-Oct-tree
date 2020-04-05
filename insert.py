@@ -27,7 +27,7 @@ def insert_kd(node_root, point, ins_data, max_id):
             else:
                 node_dir = 1
 
-            if sibling_point[axis] >= point[axis]:
+            if round(float(sibling_point[axis])) >= round(point[axis]):
                 new_node = Node('l' + str(len(nodes)), axis=p_axis, value=point[axis], dir=node_root.dir)
                 nodes.append(new_node)
                 old_parent = node_root.parent
@@ -53,7 +53,7 @@ def insert_kd(node_root, point, ins_data, max_id):
                 new_node._NodeMixin__children[1] = new_node._NodeMixin__children[0]
                 new_node._NodeMixin__children[0] = temp
                 print()
-            elif sibling_point[axis] < point[axis]:
+            elif round(float(sibling_point[axis])) < round(point[axis]):
 
                 new_node = Node('l' + str(len(nodes)), axis=p_axis, value=sibling_point[axis], dir=node_root.dir)
                 nodes.append(new_node)
