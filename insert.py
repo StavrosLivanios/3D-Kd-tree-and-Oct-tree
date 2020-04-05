@@ -55,7 +55,7 @@ def insert_kn(node_root, point, ins_data, max_id):
                 print()
             elif sibling_point[axis] < point[axis]:
 
-                new_node = Node('l' + str(len(nodes)), axis=p_axis, value=sibling_point[axis], dir=node_root.dir)
+                new_node = Node('l' + str(len(nodes)), axis=p_axis, value=str(sibling_point[axis]), dir=node_root.dir)
                 nodes.append(new_node)
                 old_parent = node_root.parent
                 temp_childs = old_parent._NodeMixin__children
@@ -80,7 +80,7 @@ def insert_kn(node_root, point, ins_data, max_id):
             res = new_node
     else:
         axis = node_root.depth % 3
-        if float(node_root.value) >= float(point[axis]):
+        if round(float(node_root.value)) >= round(float(point[axis])):
             if len(node_root.children) == 0:
                 new_node = Node('leaf_Left ' + str(max_id), parent=node_root, dir="left", Airport_ID=ins_data[0],
                          Name=ins_data[1], City=ins_data[2], Country=ins_data[3],
@@ -93,7 +93,7 @@ def insert_kn(node_root, point, ins_data, max_id):
                 nodes.append(new_node)
                 return new_node
             child = node_root.children[0]
-        elif float(node_root.value) < float(point[axis]):
+        elif round(float(node_root.value)) < round(float(point[axis])):
             if len(node_root.children) == 1:
                 new_node = Node('leaf_Right ' + str(max_id), parent=node_root, dir="right", Airport_ID=ins_data[0],
                          Name=ins_data[1], City=ins_data[2], Country=ins_data[3],

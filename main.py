@@ -25,17 +25,17 @@ while True:
 
     if choice == "1":
         # take the data sheet from the file
-        data = pd.read_csv("airports-extended20.txt", sep=",", header=None)
+        data = pd.read_csv("airports-extendedall.txt", sep=",", header=None)
         data.columns = ["Airport ID", "Name", "City", "Country", "IATA", "ICAO", "Latitude", "Longitude", "Altitude",
                         "Timezone", "DST", "Tz database time zone", "Type", "Source"]
         # preprosesing of data by removing the duplicates
         data.drop_duplicates(subset=("Latitude", "Longitude", "Altitude"), keep='first', inplace=True,
                              ignore_index=True)
+
         build_kn(data, 6, 0, "root", "root")
         # create files with the tree created
-        DotExporter(nodes[0]).to_dotfile("root.dot")
-
-        DotExporter(nodes[0]).to_picture("root.png")
+        #DotExporter(nodes[0]).to_dotfile("root.dot")
+        #DotExporter(nodes[0]).to_picture("root.png")
         max_id = max(data.iloc[:, 0])
     # ===================================================================================================================
 
