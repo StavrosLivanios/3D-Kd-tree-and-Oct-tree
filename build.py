@@ -9,7 +9,7 @@ import graphviz
 
 
 nodes = []
-def build_kn(data, axis, count, node, dir):
+def build_kd(data, axis, count, node, dir):
     # sort the array by the axis that we use
     # and take an array only with the axis we will use
     # and transform them in the state we need
@@ -53,7 +53,7 @@ def build_kn(data, axis, count, node, dir):
     # or creqate the leaf
     x = nodes[-1]
     if len(pinl) > 1:
-        build_kn(pinl, axis, count, x, "left")
+        build_kd(pinl, axis, count, x, "left")
     elif len(pinl) == 1:
         nodes.append(Node('leaf_Left ' + str(pinl.iloc[0, 0]), parent=x, dir="left", Airport_ID=pinl.iloc[0, 0],
                           Name=pinl.iloc[0, 1], City=pinl.iloc[0, 2], Country=pinl.iloc[0, 3], IATA=pinl.iloc[0, 4],
@@ -64,7 +64,7 @@ def build_kn(data, axis, count, node, dir):
                           Source=pinl.iloc[0, 13]))
 
     if len(pinr) > 1:
-        build_kn(pinr, axis, count, x, "right")
+        build_kd(pinr, axis, count, x, "right")
     elif len(pinr) == 1:
         nodes.append(Node('leaf_Right ' + str(pinr.iloc[0, 0]), parent=x, dir="right", Airport_ID=pinr.iloc[0, 0],
                           Name=pinr.iloc[0, 1], City=pinr.iloc[0, 2], Country=pinr.iloc[0, 3], IATA=pinr.iloc[0, 4],
@@ -75,8 +75,4 @@ def build_kn(data, axis, count, node, dir):
                           Source=pinr.iloc[0, 13]))
 
 
-'''
-f = open("demofile3.txt", "w", encoding="utf-8")
-for pre, fill, node in RenderTree(nodes[0]):
-    f.write("%s%s" % (pre, node.name))
-f.close()'''
+
