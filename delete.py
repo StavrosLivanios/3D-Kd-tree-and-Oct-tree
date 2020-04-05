@@ -49,7 +49,7 @@ def delete_kd(node_root, point):
 
     elif not node.siblings[0].is_leaf:
         axis_list = []
-        find_max(node, axis_list, node.parent.axis)
+        find_max(node.siblings[0], axis_list, node.parent.axis)
         node.parent.value = max(axis_list)
         node.parent._NodeMixin__children[1].dir = "left"
         del node.parent._NodeMixin__children[0]
@@ -70,8 +70,8 @@ def find_max(node,axis_list,axis):
             axis_list.append(node.Altitude)
     else:
 
-        if len(nodes.children) == 1:
-            find_max(node.children[0])
-        elif len(nodes.children) == 2:
-            find_max(node.children[0])
-            find_max(node.children[1])
+        if len(node.children) == 1:
+            find_max(node.children[0], axis_list, axis)
+        elif len(node.children) == 2:
+            find_max(node.children[0], axis_list, axis)
+            find_max(node.children[1], axis_list, axis)
