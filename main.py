@@ -116,7 +116,7 @@ while True:
         # point = [51.444166,7.088929,222]
         # data = "Name = skata , Latitude=2, Longtitude = 2, Altitude = 2"
 
-        res = update_kd(nodes[0], data_upt, point, max_id)
+        res = update_kd(nodes[0], data_upt, point)
 
         DotExporter(res.parent.parent).to_picture("update.png")
         print()

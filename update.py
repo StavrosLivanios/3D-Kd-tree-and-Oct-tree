@@ -2,11 +2,11 @@ from search import search
 from delete import delete_kd
 from insert import insert_kd
 
-def update_kd(node_root, data, point, max_id):
 
+def update_kd(node_root, data, point):
     data = data.replace(" ", "").split(",")
     for i in range(len(data)):
-        data[i]=data[i].split("=")
+        data[i] = data[i].split("=")
 
     node = search(node_root, point)
     if node == False:
@@ -19,7 +19,7 @@ def update_kd(node_root, data, point, max_id):
         if atribute == "Latitude":
             change = 1
             temp_point[0] = int(value)
-        elif atribute == "Longitude":
+        elif atribute == "Longtitude":
             change = 1
             temp_point[1] = int(value)
         elif atribute == "Altitude":
@@ -33,15 +33,10 @@ def update_kd(node_root, data, point, max_id):
     if change == 1:
         temp = node
         delete_kd(node_root, point)
-        res = insert_kd(node_root, temp_point, [temp.Airport_ID , temp.Name , temp.City, temp.Country, temp.IATA, temp.ICAO, temp_point[0] , temp_point[1], temp_point[2],
-                                     temp.Timezone, temp.DST, temp.Tz_database_time_zone, temp.Type, temp.Source], max_id)
+        res = insert_kd(node_root, temp_point,
+                        [temp.Name, temp.City, temp.Country, temp.IATA, temp.ICAO, temp_point[0], temp_point[1],
+                         temp_point[2], temp.Timezone, temp.DST, temp.Tz_database_time_zone, temp.Type, temp.Source]
+                        , temp.Airport_ID)
         return res
 
     return node
-
-
-
-
-
-
-
