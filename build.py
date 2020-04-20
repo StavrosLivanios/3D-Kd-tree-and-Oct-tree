@@ -7,8 +7,70 @@ import sys
 import os
 import graphviz
 
-
 nodes = []
+nodes_oct = []
+oct_lists_temp = []
+counter_list = 0
+
+
+def create_oct_leaf(parent, i, j, oct_lists_temp):
+    nodes_oct.append(Node('leaf ' + str(oct_lists_temp[i].iloc[j, 0]), parent=parent, position=i,
+                          Airport_ID=oct_lists_temp[i].iloc[j, 0],
+                          Name=oct_lists_temp[i].iloc[j, 1], City=oct_lists_temp[i].iloc[j, 2],
+                          Country=oct_lists_temp[i].iloc[j, 3],
+                          IATA=oct_lists_temp[i].iloc[j, 4],
+                          ICAO=oct_lists_temp[i].iloc[j, 5],
+                          Latitude=oct_lists_temp[i].iloc[j, 6], Longitude=oct_lists_temp[i].iloc[j, 7],
+                          Altitude=oct_lists_temp[i].iloc[j, 8],
+                          Timezone=oct_lists_temp[i].iloc[j, 9],
+                          DST=oct_lists_temp[i].iloc[j, 10], Tz_database_time_zone=oct_lists_temp[i].iloc[j, 11],
+                          Type=oct_lists_temp[i].iloc[j, 12],
+                          Source=oct_lists_temp[i].iloc[j, 13]))
+    return nodes_oct[-1]
+
+
+# --------------------------------------------------LIST-SEPERATOR-------------------------------------------------------------------
+# -----------------------------------------------------------------------------------------------------------------------------------
+
+def list_separator(data, axis, point):
+    if axis == 6:
+        point_cord = 0
+    elif axis == 7:
+        point_cord = 1
+    elif axis == 8:
+        point_cord = 2
+    else:
+        oct_lists_temp.append(data)
+        return
+
+    columns = ["Airport ID", "Name", "City", "Country", "IATA", "ICAO", "Latitude", "Longitude", "Altitude", "Timezone",
+               "DST", "Tz database time zone", "Type", "Source"]
+    data.sort_values(by=[str(columns[axis])], inplace=True, ignore_index=True)
+    pin = data.iloc[:, axis]
+    pin = pin.to_numpy()
+    a = point[point_cord]
+    pinr = pd.DataFrame(columns=columns)
+    pinl = pd.DataFrame(columns=columns)
+    if len(pin) != 0:
+        b = pin[min(range(len(pin)), key=lambda i: abs(pin[i] - a))]
+        # spliting the data sheet to right and left
+        index = data.where(data[str(columns[axis])] == b).last_valid_index()
+
+        if float(data.iloc[index, axis]) <= point[point_cord]:
+            pinr = data.iloc[index + 1:]
+            pinl = data.iloc[:index + 1]
+        else:
+            index = data.where(data[str(columns[axis])] == b).last_valid_index()
+            pinr = data.iloc[index:]
+            pinl = data.iloc[:index]
+    axis = axis + 1
+    list_separator(pinl, axis, point)
+    list_separator(pinr, axis, point)
+
+
+# --------------------------------------------------KD-TREE-------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------------
+
 def build_kd(data, axis, count, node, dir):
     # sort the array by the axis that we use
     # and take an array only with the axis we will use
@@ -55,7 +117,7 @@ def build_kd(data, axis, count, node, dir):
     if len(pinl) > 1:
         build_kd(pinl, axis, count, x, "left")
     elif len(pinl) == 1:
-        nodes.append(Node('leaf_Left ' + str(pinl.iloc[0, 0]), parent=x, dir="left", Airport_ID=pinl.iloc[0, 0],
+        nodes.append(Node('leaf ' + str(pinl.iloc[0, 0]), parent=x, dir="left", Airport_ID=pinl.iloc[0, 0],
                           Name=pinl.iloc[0, 1], City=pinl.iloc[0, 2], Country=pinl.iloc[0, 3], IATA=pinl.iloc[0, 4],
                           ICAO=pinl.iloc[0, 5],
                           Latitude=pinl.iloc[0, 6], Longitude=pinl.iloc[0, 7], Altitude=pinl.iloc[0, 8],
@@ -75,4 +137,79 @@ def build_kd(data, axis, count, node, dir):
                           Source=pinr.iloc[0, 13]))
 
 
+# --------------------------------------------------OCT-TREE-------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------------------------------------------------------
 
+def build_oct(data, parent,meso_x , meso_y, meso_z):
+
+    if parent == "root":
+        min_x = data.min()["Latitude"]
+        max_x = data.max()["Latitude"]
+        meso_x = (min_x + max_x) / 2
+
+        min_y = data.min()["Longitude"]
+        max_y = data.max()["Longitude"]
+        meso_y = (max_y + min_y) / 2
+
+        min_z = data.min()["Altitude"]
+        max_z = data.max()["Altitude"]
+        meso_z = (max_z + min_z) / 2
+
+        nodes_oct.append(Node("root", value_x=meso_x, value_y=meso_y, value_z=meso_z, layout='sfdp'))
+        parent = nodes_oct[-1]
+
+    global oct_lists_temp
+    oct_lists_temp = []
+    list_separator(data, 6, [meso_x, meso_y, meso_z])
+    oct_lists = oct_lists_temp
+
+
+    for i in range(8):
+
+        if len(oct_lists[i]) > 1:
+
+            min_x = oct_lists[i].min()["Latitude"]
+            max_x = oct_lists[i].max()["Latitude"]
+            meso_x = (min_x + max_x) / 2
+
+            min_y = oct_lists[i].min()["Longitude"]
+            max_y = oct_lists[i].max()["Longitude"]
+            meso_y = (max_y + min_y) / 2
+
+            min_z = oct_lists[i].min()["Altitude"]
+            max_z = oct_lists[i].max()["Altitude"]
+            meso_z = (max_z + min_z) / 2
+
+            nodes_oct.append(Node('l' + str(len(nodes_oct)), parent=parent, position=i, value_x=meso_x, value_y=meso_y,
+                                  value_z=meso_z))
+            build_oct(oct_lists[i], nodes_oct[-1], meso_x, meso_y, meso_z)
+
+        elif len(oct_lists[i]) == 1:
+            nodes_oct.append(Node('leaf ' + str(oct_lists[i].iloc[0, 0]), parent=parent, position=i,
+                                  Airport_ID=oct_lists[i].iloc[0, 0],
+                                  Name=oct_lists[i].iloc[0, 1], City=oct_lists[i].iloc[0, 2],
+                                  Country=oct_lists[i].iloc[0, 3], IATA=oct_lists[i].iloc[0, 4],
+                                  ICAO=oct_lists[i].iloc[0, 5],
+                                  Latitude=oct_lists[i].iloc[0, 6], Longitude=oct_lists[i].iloc[0, 7],
+                                  Altitude=oct_lists[i].iloc[0, 8],
+                                  Timezone=oct_lists[i].iloc[0, 9],
+                                  DST=oct_lists[i].iloc[0, 10], Tz_database_time_zone=oct_lists[i].iloc[0, 11],
+                                  Type=oct_lists[i].iloc[0, 12],
+                                  Source=oct_lists[i].iloc[0, 13]))
+
+
+data = pd.read_csv("airports-extended20.txt", sep=",", header=None)
+data.columns = ["Airport ID", "Name", "City", "Country", "IATA", "ICAO", "Latitude", "Longitude", "Altitude",
+                "Timezone", "DST", "Tz database time zone", "Type", "Source"]
+data.drop_duplicates(subset=("Latitude", "Longitude", "Altitude"), keep='first', inplace=True, ignore_index=True)
+build_oct(data, "root", 0, 0, 0)
+import os
+
+os.environ["PATH"] += os.pathsep + 'C:\Program Files (x86)\Graphviz2.38\\bin\\'
+DotExporter(nodes_oct[0]).to_dotfile("root_oct.dot")
+DotExporter(nodes_oct[0]).to_picture("oct_tree.png")
+print()
+
+from search import search_oct
+
+print(search_oct(nodes_oct[0], [65.66000366210938,-18.07270050048828,6]))
