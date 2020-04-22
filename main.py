@@ -31,7 +31,7 @@ while True:
 
     if choice == "1":
         # take the data sheet from the file
-        data = pd.read_csv("airports-extended1000.txt", sep=",", header=None)
+        data = pd.read_csv("airports-extended100.txt", sep=",", header=None)
         data.columns = ["Airport ID", "Name", "City", "Country", "IATA", "ICAO", "Latitude", "Longitude", "Altitude",
                         "Timezone", "DST", "Tz database time zone", "Type", "Source"]
 

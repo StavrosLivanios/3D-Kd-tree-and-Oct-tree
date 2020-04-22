@@ -1,5 +1,32 @@
-from build import nodes
+from build import nodes, nodes_oct
 from anytree import Node
+
+def find_position (point,meso_point):
+    if meso_point[0] >= float(point[0]) and meso_point[1] >= float(point[1]) and meso_point[2] >= float(
+            point[2]):
+        position = 0
+    elif meso_point[0] >= float(point[0]) and meso_point[1] >= float(point[1]) and meso_point[2] < float(
+            point[2]):
+        position = 1
+    elif meso_point[0] >= float(point[0]) and meso_point[1] < float(point[1]) and meso_point[2] >= float(
+            point[2]):
+        position = 2
+    elif meso_point[0] >= float(point[0]) and meso_point[1] < float(point[1]) and meso_point[2] < float(
+            point[2]):
+        position = 3
+    elif meso_point[0] < float(point[0]) and meso_point[1] >= float(point[1]) and meso_point[2] >= float(
+            point[2]):
+        position = 4
+    elif meso_point[0] < float(point[0]) and meso_point[1] >= float(point[1]) and meso_point[2] < float(
+            point[2]):
+        position = 5
+    elif meso_point[0] < float(point[0]) and meso_point[1] < float(point[1]) and meso_point[2] >= float(
+            point[2]):
+        position = 6
+    elif meso_point[0] < float(point[0]) and meso_point[1] < float(point[1]) and meso_point[2] < float(
+            point[2]):
+        position = 7
+    return position
 
 
 def insert_kd(node_root, point, ins_data, max_id):
@@ -108,5 +135,61 @@ def insert_kd(node_root, point, ins_data, max_id):
             child = node_root.children[1]
 
         res = insert_kd(child, point, ins_data, max_id)
+
+    return res
+
+
+def insert_oct(node_root, point, ins_data, max_id):
+    max_id = max_id + 1
+    if node_root.is_leaf:
+        if float(node_root.Latitude) - float(point[0]) < 10 ** -6 and float(node_root.Longitude) - float(
+                point[1]) < 10 ** -6 and float(node_root.Altitude) - float(point[2]) < 10 ** -6:
+            print("The x,y,z axis you inputed is already in the tree")
+            return False
+        else:
+
+                meso_x = (point[0] + float(node_root.Latitude)) / 2
+                meso_y = (point[1] + float(node_root.Longitude)) / 2
+                meso_z = (point[2] + float(node_root.Altitude)) / 2
+
+                new_node = Node('l' + str(len(nodes_oct)), parent=node_root.parent, position=node_root.position, value_x=meso_x, value_y=meso_y,value_z=meso_z)
+                nodes_oct.append(new_node)
+
+                node_root.parent = new_node
+
+                pos = find_position(point, [meso_x,meso_y,meso_z])
+                nodes_oct.append(Node('leaf ' + str(max_id), parent=new_node, position=pos, Airport_ID=max_id,
+                    Name = ins_data[0], City = ins_data[1], Country = ins_data[2],
+                    IATA = ins_data[3],
+                    ICAO = ins_data[4],
+                    Latitude = ins_data[5], Longitude = ins_data[6], Altitude = ins_data[7],
+                    Timezone = ins_data[8],
+                    DST = ins_data[9], Tz_database_time_zone = ins_data[10], Type = ins_data[11],
+                    Source = ins_data[12]))
+                node_root._NodeMixin__children.sort(key=lambda x: x.position)
+                new_node._NodeMixin__children.sort(key=lambda x: x.position)
+                res = new_node
+    else:
+        position = find_position(point, [node_root.value_x,node_root.value_y,node_root.value_z])
+
+        child = False
+        for i in node_root.children:
+            if i.position == position:
+                child = i
+
+        if child != False:
+            res = insert_oct(child, point, ins_data, max_id)
+        else:
+            nodes_oct.append(
+                Node('leaf ' + str(max_id), parent=node_root, position=position, Airport_ID=max_id,
+                     Name=ins_data[0], City=ins_data[1], Country=ins_data[2],
+                     IATA=ins_data[3],
+                     ICAO=ins_data[4],
+                     Latitude=ins_data[5], Longitude=ins_data[6], Altitude=ins_data[7],
+                     Timezone=ins_data[8],
+                     DST=ins_data[9], Tz_database_time_zone=ins_data[10], Type=ins_data[11],
+                     Source=ins_data[12]))
+            res = nodes_oct[-1]
+            node_root._NodeMixin__children.sort(key=lambda x: x.position)
 
     return res

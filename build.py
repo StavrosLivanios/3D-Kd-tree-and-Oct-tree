@@ -7,6 +7,7 @@ import sys
 import os
 import graphviz
 
+
 nodes = []
 nodes_oct = []
 oct_lists_temp = []
@@ -198,18 +199,3 @@ def build_oct(data, parent,meso_x , meso_y, meso_z):
                                   Source=oct_lists[i].iloc[0, 13]))
 
 
-data = pd.read_csv("airports-extended20.txt", sep=",", header=None)
-data.columns = ["Airport ID", "Name", "City", "Country", "IATA", "ICAO", "Latitude", "Longitude", "Altitude",
-                "Timezone", "DST", "Tz database time zone", "Type", "Source"]
-data.drop_duplicates(subset=("Latitude", "Longitude", "Altitude"), keep='first', inplace=True, ignore_index=True)
-build_oct(data, "root", 0, 0, 0)
-import os
-
-os.environ["PATH"] += os.pathsep + 'C:\Program Files (x86)\Graphviz2.38\\bin\\'
-DotExporter(nodes_oct[0]).to_dotfile("root_oct.dot")
-DotExporter(nodes_oct[0]).to_picture("oct_tree.png")
-print()
-
-from search import search_oct
-
-print(search_oct(nodes_oct[0], [65.66000366210938,-18.07270050048828,6]))
