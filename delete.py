@@ -1,11 +1,13 @@
 from anytree.exporter import DotExporter
-from search import search
+from search import search, search_oct
 from build import nodes
 from anytree import Node, RenderTree
 
 
 def delete_kd(node_root, point):
     node = search(node_root, point)
+    if not node:
+        return False
 
     if node.siblings[0].is_leaf:
         if node.dir == 'left':
@@ -75,3 +77,29 @@ def find_max(node,axis_list,axis):
         elif len(node.children) == 2:
             find_max(node.children[0], axis_list, axis)
             find_max(node.children[1], axis_list, axis)
+
+
+def delete_oct(node_root, point):
+    node = search_oct(node_root, point)
+    if not node:
+        return False
+
+    if len(node.parent._NodeMixin__children) == 2 :
+
+        node.siblings[0].position = node.parent.position
+
+        ind = 0
+        for i in node.parent.parent._NodeMixin__children:
+            if node.parent.position == i.position:
+                node.parent.parent._NodeMixin__children[ind] = node.siblings[0]
+            ind = ind + 1
+
+    else:
+        ind = 0
+        for i in node.parent._NodeMixin__children:
+            if node.position == i.position:
+                del node.parent._NodeMixin__children[ind]
+                return node
+            ind = ind + 1
+
+    return node

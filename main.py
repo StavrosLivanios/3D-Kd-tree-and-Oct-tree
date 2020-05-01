@@ -1,20 +1,79 @@
-import pandas as pd
-from anytree.exporter import DotExporter
-import os
 import ast
-from build import build_kd, nodes
-from search import search
-from delete import delete_kd
-from insert import insert_kd
-from update import update_kd
+import os
+import sys
+
+import pandas as pd
 from anytree.exporter import DictExporter
+from anytree.exporter import DotExporter
 from anytree.importer import DictImporter
+from timeit import default_timer as timer
+# imports for KD and OCT trees
+from build import build_kd, nodes, build_oct, nodes_oct
+from delete import delete_kd, delete_oct
+from insert import insert_kd, insert_oct
+from search import search, search_oct
+from update import update_kd, update_oct
 
 os.environ["PATH"] += os.pathsep + 'C:\Program Files (x86)\Graphviz2.38\\bin\\'
-# sys.setrecursionlimit(13000)
-
+sys.setrecursionlimit(13000)
 max_id = 0
+max_id_oct = 0
+
+print("THIS IS A MENU")
+print("TYPE THE NUMBER OF THE CHOICE YOU WANT TO RUN")
+print("1. OCT-TREE")
+print("2. KD-TREE")
+tree_choice = input()
+tree_choice = int(tree_choice)
+print("Choose data sheet size (20 , 100 , 1000 , all) (all is 12666)")
+print("type on of the choises (20 , 100 , 1000 , all) ")
+data_size = input()
+sheet_name = "airports-extended" + str(data_size) + ".txt"
+
+data = pd.read_csv(sheet_name, sep=",", header=None)
+data.columns = ["Airport ID", "Name", "City", "Country", "IATA", "ICAO", "Latitude", "Longitude", "Altitude",
+                "Timezone", "DST", "Tz database time zone", "Type", "Source"]
+data.drop_duplicates(subset=("Latitude", "Longitude", "Altitude"), keep='first', inplace=True,
+                     ignore_index=True)
+max_id = max(data.iloc[:, 0])
+max_id_oct = max_id
+
+
+print("Would you like to run build or import ")
+print("1. build ")
+print("2. import")
+choise_2 = int(input())
+if choise_2 == 1:
+    if tree_choice == 1:
+        start = timer()
+        build_oct(data, "root", 0, 0, 0)
+        end = timer()
+
+    elif tree_choice == 2:
+        start = timer()
+        build_kd(data, 6, 0, "root", "root")
+        end = timer()
+    print("BUILD FOR THE SELECTED TREE HAS BEEN CALLED")
+    print(end - start)
+elif choise_2 == 2:
+    importer = DictImporter()
+    if tree_choice == 1:
+        dict = ast.literal_eval(open("tree_save/oct_export.txt", encoding="utf-8").read())
+        nodes_oct = []
+        nodes2 = []
+        nodes2 = importer.import_(dict)
+        nodes_oct.append(nodes2)
+    elif tree_choice == 2:
+        dict = ast.literal_eval(open("tree_save/kd_export.txt", encoding="utf-8").read())
+        nodes = []
+        nodes2 = []
+        nodes2 = importer.import_(dict)
+        nodes.append(nodes2)
+    print("A file with the tree has been imported")
+
+
 while True:
+
     print("THIS IS A MENU")
     print("TYPE THE NUMBER OF THE CHOICE YOU WANT TO RUN")
     print("1. build tree (run this before the others)")
@@ -24,82 +83,95 @@ while True:
     print("5. UPDATE")
     print("6. EXPORT")
     print("7. INPORT")
-    print("8. EXIT")
+    print("7. change tree (kd - oct)")
+    print("9. EXIT")
     choice = input()
 
     # ===================================================================================================================
 
     if choice == "1":
-        # take the data sheet from the file
-        data = pd.read_csv("airports-extended1000.txt", sep=",", header=None)
-        data.columns = ["Airport ID", "Name", "City", "Country", "IATA", "ICAO", "Latitude", "Longitude", "Altitude",
-                        "Timezone", "DST", "Tz database time zone", "Type", "Source"]
-
-        # preprosesing of data by removing the duplicates
-        data.drop_duplicates(subset=("Latitude", "Longitude", "Altitude"), keep='first', inplace=True,
-                             ignore_index=True)
-        build_kd(data, 6, 0, "root", "root")
-        max_id = max(data.iloc[:, 0])
-
-        # create files with the tree created
-    #        DotExporter(nodes[0]).to_dotfile("root.dot")
-    #        DotExporter(nodes[0]).to_picture("root.png")
+        if tree_choice == 1:
+            start = timer()
+            build_oct(data, "root", 0, 0, 0)
+            end = timer()
+        elif tree_choice == 2:
+            start = timer()
+            build_kd(data, 6, 0, "root", "root")
+            end = timer()
+        print(end - start)
     # ===================================================================================================================
 
     elif choice == "2":
-
-        if len(nodes) == 0:
-            print("THERE IS NO DATA")
+        print("GIVE THE POINT YOU WANT TO SEARCH FOR as x,y,z")
+        x = input()
+        x = x.replace(" ", "")
+        x = x.split(",")
+        point = [float(x[0]), float(x[1]), float(x[2])]
+        if tree_choice == 1:
+            start = timer()
+            res = search_oct(nodes_oct[0], point)
+            end = timer()
+        elif tree_choice == 2:
+            start = timer()
+            res = search(nodes[0], point)
+            end = timer()
+        print(end - start)
+        if not res:
+            print("The point doesn't exist")
         else:
-            print("GIVE THE POINT YOU WANT TO SEARCH FOR as x,y,z")
-            #x = "51.100799560546875,-100.052001953125,999"
-            x = input()
-            x = x.replace(" ", "")
-            x = x.split(",")
-            point = [float(x[0]), float(x[1]), float(x[2])]
-            axis = point
-            res = search(nodes[0], axis)
-            if not res:
-                print("The point doesn't exist")
-            else:
-                print(res.Name)
-                DotExporter(res.parent.parent).to_picture("search.png")
-        print()
+            print(res)
+            DotExporter(res.parent.parent).to_picture("tree_png/search.png")
+
     # ===================================================================================================================
 
     elif choice == "3":
         print("give the x,y,z of the point you want to delete")
-        #x = "51.100799560546875,-100.052001953125,999"
         x = input()
         x = x.replace(" ", "")
         x = x.split(",")
         point = [float(x[0]), float(x[1]), float(x[2])]
 
-        # point = [nodes[26].Latitude, nodes[26].Longitude, nodes[26].Altitude]
-        # point = [-23.246700286865234,131.9029998779297,620]
+        '''if tree_choice == 1:
+            res = search_oct(nodes_oct[0], point)
+        elif tree_choice == 2:
+            res = search(nodes[0], point)
+        if not res == False:
+            DotExporter(res.parent.parent).to_picture("tree_png/delete_before.png")'''
 
-        res = del_node = delete_kd(nodes[0], point)
-        DotExporter(res.parent.parent).to_picture("delete.png")
+        if tree_choice == 1:
+            start = timer()
+            res = delete_oct(nodes_oct[0], point)
+            end = timer()
+        elif tree_choice == 2:
+            start = timer()
+            res = del_node = delete_kd(nodes[0], point)
+            end = timer()
+        print(end - start)
+        if not res:
+            print("The point doesn't exist")
+        elif tree_choice == 2:
+            DotExporter(res.parent.parent).to_picture("tree_png/delete.png")
     # ===================================================================================================================
     elif choice == "4":
         print("give the data of the insert separating them with  ,  (dont give id)")
-        #pin = "Dauphin Barker Airport,Dauphin,Canada,YDN,CYDN,51.100799560546875,-100.052001953125,999,-6,A,America/Winnipeg,airport,OurAirports"
         pin = input()
         pin = pin.replace("\"", "")
         pin = pin.split(",")
-
         point = [float(pin[5]), float(pin[6]), float(pin[7])]
 
-        # point = [nodes[26].Latitude, nodes[26].Longitude, nodes[26].Altitude]
-        # pin = [1111111, "siouta diplomatikh", "patra", "ellda", "gr2", nodes[26].Latitude,  nodes[26].Longitude,  nodes[26].Altitude, 1, -2, "a", "geia", "af", "af", "af"]
-        # point = [64.2833023071289, -14.401399612426758, 75]
-        # point = [nodes[26].Latitude, nodes[26].Longitude, nodes[26].Altitude]
-
-        res = insert_kd(nodes[0], point, pin, int(max_id))
-        print(res.name)
-        if not res == False:
-            DotExporter(res.parent.parent).to_picture("insert.png")
-        print()
+        if tree_choice == 1:
+            start = timer()
+            res = insert_oct(nodes_oct[0], point, pin, int(max_id_oct))
+            end = timer()
+        elif tree_choice == 2:
+            start = timer()
+            res = insert_kd(nodes[0], point, pin, int(max_id))
+            end = timer()
+        print(end - start)
+        if not res:
+            print("The point already exist")
+        elif tree_choice == 2:
+            DotExporter(res.parent.parent).to_picture("tree_png/insert.png")
     # ===================================================================================================================
 
     elif choice == "5":
@@ -109,42 +181,78 @@ while True:
         x = x.replace(" ", "")
         x = x.split(",")
         point = [float(x[0]), float(x[1]), float(x[2])]
-
-        print("give the data of the update separating them with  ,  with nthename of the datasheet names")
+        print("give the data of the update separating them with  ,  (NAME = NEW_ , VALUE = NEW_)")
         data_upt = input()
-        # point = [nodes[6].Latitude, nodes[6].Longitude, nodes[6].Altitude]
-        # point = [51.444166,7.088929,222]
-        # data = "Name = skata , Latitude=2, Longtitude = 2, Altitude = 2"
 
-        res = update_kd(nodes[0], data_upt, point)
+        '''if tree_choice == 1:
+            res = search_oct(nodes_oct[0], point)
+        elif tree_choice == 2:
+            res = search(nodes[0], point)
+        if not res == False:
+            DotExporter(res.parent.parent).to_picture("tree_png/update_before.png")'''
 
-        DotExporter(res.parent.parent).to_picture("update.png")
-        print()
+        if tree_choice == 1:
+            start = timer()
+            res = update_oct(nodes_oct[0], data_upt, point)
+            end = timer()
+        elif tree_choice == 2:
+            start = timer()
+            res = update_kd(nodes[0], data_upt, point)
+            end = timer()
+        print(end - start)
+        if not res:
+            print("The point DOENT EXIST exist")
+        elif tree_choice == 2:
+            DotExporter(res.parent.parent).to_picture("tree_png/update.png")
     # ===================================================================================================================
 
     elif choice == "6":
         exporter = DictExporter()
-        data2 = exporter.export(nodes[0])
-        importer = DictImporter()
-        f = open("kd_export.txt", "w", encoding="utf-8")
+        if tree_choice == 1:
+            data2 = exporter.export(nodes_oct[0])
+            importer = DictImporter()
+            f = open("tree_save/oct_export.txt", "w", encoding="utf-8")
+        elif tree_choice == 2:
+            data2 = exporter.export(nodes[0])
+            importer = DictImporter()
+            f = open("tree_save/kd_export.txt", "w", encoding="utf-8")
         f.write(str(data2))
         f.close()
+        print("A file with the tree has been created")
 
     # ===================================================================================================================
 
     elif choice == "7":
-
-        dict = ast.literal_eval(open("kd_export.txt", encoding="utf-8").read())
-        nodes[0] = importer.import_(dict)
-
+        importer = DictImporter()
+        if tree_choice == 1:
+            dict = ast.literal_eval(open("tree_save/oct_export.txt", encoding="utf-8").read())
+            nodes_oct = []
+            nodes2 = []
+            nodes2 = importer.import_(dict)
+            nodes_oct.append(nodes2)
+        elif tree_choice == 2:
+            dict = ast.literal_eval(open("tree_save/kd_export.txt", encoding="utf-8").read())
+            nodes = []
+            nodes2 = []
+            nodes2 = importer.import_(dict)
+            nodes.append(nodes2)
+        print("A file with the tree has been imported")
+    # ===================================================================================================================
     elif choice == "8":
-
-        x = input()
-        for i in range(len(nodes)):
-            if (nodes[i].name == x):
-                ans = nodes[i]
-                ind = i
-        print()
+        if tree_choice == 1:
+            tree_choice == 2
+            if len(nodes_oct) == 0:
+                build_oct(data, "root", 0, 0, 0)
+                print("Tree changed to oct and build has been called")
+            else:
+                print("Tree changed to oct")
+        elif tree_choice == 2:
+            tree_choice == 1
+            if len(nodes) == 0:
+                build_oct(data, "root", 0, 0, 0)
+                print("Tree changed to kd and build has been called")
+            else:
+                print("Tree changed to kd")
     # ===================================================================================================================
     else:
         break
