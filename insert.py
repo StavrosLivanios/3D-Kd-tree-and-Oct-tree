@@ -1,7 +1,21 @@
 from build import nodes, nodes_oct
 from anytree import Node
 
-def find_position (point,meso_point):
+
+def insert_leaf(name, ins_data, dir, parent, max_id):
+    nodes.append(
+        Node(name, parent=parent, dir=dir, Airport_ID=max_id,
+             Name=ins_data[0], City=ins_data[1], Country=ins_data[2],
+             IATA=ins_data[3],
+             ICAO=ins_data[4],
+             Latitude=ins_data[5], Longitude=ins_data[6], Altitude=ins_data[7],
+             Timezone=ins_data[8],
+             DST=ins_data[9], Tz_database_time_zone=ins_data[10], Type=ins_data[11],
+             Source=ins_data[12]))
+    return nodes[-1]
+
+
+def find_position(point, meso_point):
     if meso_point[0] >= float(point[0]) and meso_point[1] >= float(point[1]) and meso_point[2] >= float(
             point[2]):
         position = 0
@@ -31,9 +45,12 @@ def find_position (point,meso_point):
 
 def insert_kd(node_root, point, ins_data, max_id):
     max_id = max_id + 1
+    # print(node_root)
     if node_root.is_leaf:
-        if float(node_root.Latitude) - float(point[0]) < 10 ** -6 and float(node_root.Longitude) - float(
-                point[1]) < 10 ** -6 and float(node_root.Altitude) - float(point[2]) < 10 ** -6:
+        if round(float(node_root.Latitude), 4) == round(float(point[0]), 4) and round(float(node_root.Longitude),
+                                                                                      4) == round(float(point[1]),
+                                                                                                  4) and round(
+                float(node_root.Altitude), 4) == round(float(point[2]), 4):
             print("The x,y,z axis you inputed is already in the tree")
             return False
         else:
@@ -54,56 +71,31 @@ def insert_kd(node_root, point, ins_data, max_id):
             else:
                 node_dir = 1
 
-            if round(float(sibling_point[axis])) >= round(point[axis]):
-                new_node = Node('l' + str(len(nodes)), axis=p_axis, value=point[axis], dir=node_root.dir)
-                nodes.append(new_node)
-                old_parent = node_root.parent
-                temp_childs = old_parent._NodeMixin__children
-                node_root.parent = new_node
-                new_node.parent = old_parent
-                temp_childs[node_dir] = new_node
-                old_parent._NodeMixin__children = temp_childs
+            new_node = Node('l' + str(len(nodes)), axis=p_axis, value=point[axis], dir=node_root.dir)
+            nodes.append(new_node)
+            old_parent = node_root.parent
+            temp_childs = old_parent._NodeMixin__children
+            node_root.parent = new_node
+            new_node.parent = old_parent
+            temp_childs[node_dir] = new_node
+            old_parent._NodeMixin__children = temp_childs
 
+            if round(float(sibling_point[axis])) >= round(point[axis]):
                 node_root.dir = "right"
                 node_root.name = "leaf_" + node_root.dir + " " + node_root.name.split()[1]
-                nodes.append(
-                    Node('leaf_Left ' + str(max_id), parent=node_root.parent, dir="left", Airport_ID=max_id,
-                         Name=ins_data[0], City=ins_data[1], Country=ins_data[2],
-                         IATA=ins_data[3],
-                         ICAO=ins_data[4],
-                         Latitude=ins_data[5], Longitude=ins_data[6], Altitude=ins_data[7],
-                         Timezone=ins_data[8],
-                         DST=ins_data[9], Tz_database_time_zone=ins_data[10], Type=ins_data[11],
-                         Source=ins_data[12]))
+
+                insert_leaf('leaf_Left ' + str(max_id), ins_data, "left", node_root.parent, max_id)
 
                 temp = new_node._NodeMixin__children[1]
                 new_node._NodeMixin__children[1] = new_node._NodeMixin__children[0]
                 new_node._NodeMixin__children[0] = temp
-                print()
+
             elif round(float(sibling_point[axis])) < round(point[axis]):
-
-                new_node = Node('l' + str(len(nodes)), axis=p_axis, value=sibling_point[axis], dir=node_root.dir)
-                nodes.append(new_node)
-                old_parent = node_root.parent
-                temp_childs = old_parent._NodeMixin__children
-                node_root.parent = new_node
-                new_node.parent = old_parent
-                temp_childs[node_dir] = new_node
-                old_parent._NodeMixin__children = temp_childs
-
                 node_root.dir = "left"
                 node_root.name = "leaf_" + node_root.dir + " " + node_root.name.split()[1]
 
-                nodes.append(
-                    Node('leaf_right ' + str(max_id), parent=node_root.parent, dir="right", Airport_ID=max_id,
-                         Name=ins_data[0], City=ins_data[1], Country=ins_data[2],
-                         IATA=ins_data[3],
-                         ICAO=ins_data[4],
-                         Latitude=ins_data[5], Longitude=ins_data[6], Altitude=ins_data[7],
-                         Timezone=ins_data[8],
-                         DST=ins_data[9], Tz_database_time_zone=ins_data[10], Type=ins_data[11],
-                         Source=ins_data[12]))
-                print()
+                insert_leaf('leaf_right ' + str(max_id), ins_data, "right", node_root.parent, max_id)
+
             res = new_node
     else:
         axis = node_root.depth % 3
@@ -142,36 +134,39 @@ def insert_kd(node_root, point, ins_data, max_id):
 def insert_oct(node_root, point, ins_data, max_id):
     max_id = max_id + 1
     if node_root.is_leaf:
-        if float(node_root.Latitude) - float(point[0]) < 10 ** -6 and float(node_root.Longitude) - float(
-                point[1]) < 10 ** -6 and float(node_root.Altitude) - float(point[2]) < 10 ** -6:
+        if round(float(node_root.Latitude), 4) == round(float(point[0]), 4) and round(float(node_root.Longitude),
+                                                                                      4) == round(float(point[1]),
+                                                                                                  4) and round(
+                float(node_root.Altitude), 4) == round(float(point[2]), 4):
             print("The x,y,z axis you inputed is already in the tree")
             return False
         else:
 
-                meso_x = (point[0] + float(node_root.Latitude)) / 2
-                meso_y = (point[1] + float(node_root.Longitude)) / 2
-                meso_z = (point[2] + float(node_root.Altitude)) / 2
+            meso_x = (point[0] + float(node_root.Latitude)) / 2
+            meso_y = (point[1] + float(node_root.Longitude)) / 2
+            meso_z = (point[2] + float(node_root.Altitude)) / 2
 
-                new_node = Node('l' + str(len(nodes_oct)), parent=node_root.parent, position=node_root.position, value_x=meso_x, value_y=meso_y,value_z=meso_z)
-                nodes_oct.append(new_node)
+            new_node = Node('l' + str(len(nodes_oct)), parent=node_root.parent, position=node_root.position,
+                            value_x=meso_x, value_y=meso_y, value_z=meso_z)
+            nodes_oct.append(new_node)
 
-                node_root.parent = new_node
+            node_root.parent = new_node
 
-                pos = find_position(point, [meso_x,meso_y,meso_z])
-                new_child = Node('leaf ' + str(max_id), parent=new_node, position=pos, Airport_ID=max_id,
-                    Name = ins_data[0], City = ins_data[1], Country = ins_data[2],
-                    IATA = ins_data[3],
-                    ICAO = ins_data[4],
-                    Latitude = ins_data[5], Longitude = ins_data[6], Altitude = ins_data[7],
-                    Timezone = ins_data[8],
-                    DST = ins_data[9], Tz_database_time_zone = ins_data[10], Type = ins_data[11],
-                    Source = ins_data[12])
-                nodes_oct.append(new_child)
-                node_root._NodeMixin__children.sort(key=lambda x: x.position)
-                new_node._NodeMixin__children.sort(key=lambda x: x.position)
-                res = new_node
+            pos = find_position(point, [meso_x, meso_y, meso_z])
+            new_child = Node('leaf ' + str(max_id), parent=new_node, position=pos, Airport_ID=max_id,
+                             Name=ins_data[0], City=ins_data[1], Country=ins_data[2],
+                             IATA=ins_data[3],
+                             ICAO=ins_data[4],
+                             Latitude=ins_data[5], Longitude=ins_data[6], Altitude=ins_data[7],
+                             Timezone=ins_data[8],
+                             DST=ins_data[9], Tz_database_time_zone=ins_data[10], Type=ins_data[11],
+                             Source=ins_data[12])
+            nodes_oct.append(new_child)
+            node_root._NodeMixin__children.sort(key=lambda x: x.position)
+            new_node._NodeMixin__children.sort(key=lambda x: x.position)
+            res = new_node
     else:
-        position = find_position(point, [node_root.value_x,node_root.value_y,node_root.value_z])
+        position = find_position(point, [node_root.value_x, node_root.value_y, node_root.value_z])
 
         child = False
         for i in node_root.children:

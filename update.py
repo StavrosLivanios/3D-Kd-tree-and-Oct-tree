@@ -18,15 +18,15 @@ def update_kd(node_root, data, point):
         value = data[i][1]
         if atribute == "Latitude":
             change = 1
-            temp_point[0] = int(value)
+            temp_point[0] = float(value)
         elif atribute == "Longitude":
             change = 1
-            temp_point[1] = int(value)
+            temp_point[1] = float(value)
         elif atribute == "Altitude":
             change = 1
-            temp_point[2] = int(value)
+            temp_point[2] = float(value)
         else:
-            print(atribute + "=" + value)
+            #print(atribute + "=" + value)
             strr = "node." + atribute + " = " + "\"" + value + "\""
             exec(strr)
 
@@ -57,13 +57,13 @@ def update_oct(node_root, data, point):
         value = data[i][1]
         if atribute == "Latitude":
             change = 1
-            temp_point[0] = int(value)
+            temp_point[0] = float(value)
         elif atribute == "Longitude":
             change = 1
-            temp_point[1] = int(value)
+            temp_point[1] = float(value)
         elif atribute == "Altitude":
             change = 1
-            temp_point[2] = int(value)
+            temp_point[2] = float(value)
         else:
             #print(atribute + "=" + value)
             strr = "node." + atribute + " = " + "\"" + value + "\""
