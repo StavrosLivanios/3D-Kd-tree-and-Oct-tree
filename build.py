@@ -1,34 +1,14 @@
 import pandas as pd
 import numpy as np
-from anytree import Node, RenderTree
-from anytree.exporter import DotExporter
-from anytree.dotexport import RenderTreeGraph
-import sys
-import os
-import graphviz
-
+from anytree import Node
 
 nodes = []
+values_kd_x = []
+values_kd_y = []
+values_kd_z = []
 nodes_oct = []
 oct_lists_temp = []
 counter_list = 0
-
-
-def create_oct_leaf(parent, i, j, oct_lists_temp):
-    nodes_oct.append(Node('leaf ' + str(oct_lists_temp[i].iloc[j, 0]), parent=parent, position=i,
-                          Airport_ID=oct_lists_temp[i].iloc[j, 0],
-                          Name=oct_lists_temp[i].iloc[j, 1], City=oct_lists_temp[i].iloc[j, 2],
-                          Country=oct_lists_temp[i].iloc[j, 3],
-                          IATA=oct_lists_temp[i].iloc[j, 4],
-                          ICAO=oct_lists_temp[i].iloc[j, 5],
-                          Latitude=oct_lists_temp[i].iloc[j, 6], Longitude=oct_lists_temp[i].iloc[j, 7],
-                          Altitude=oct_lists_temp[i].iloc[j, 8],
-                          Timezone=oct_lists_temp[i].iloc[j, 9],
-                          DST=oct_lists_temp[i].iloc[j, 10], Tz_database_time_zone=oct_lists_temp[i].iloc[j, 11],
-                          Type=oct_lists_temp[i].iloc[j, 12],
-                          Source=oct_lists_temp[i].iloc[j, 13]))
-    return nodes_oct[-1]
-
 
 # --------------------------------------------------LIST-SEPERATOR-------------------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------------------------------------
@@ -99,9 +79,25 @@ def build_kd(data, axis, count, node, dir):
 
     # creation of root node of kd-tree
     if count == 0:
+
+        if axis == 6:
+            values_kd_x.append(b)
+        elif axis == 7:
+            values_kd_y.append(b)
+        else:
+            values_kd_z.append(b)
+
         nodes.append(Node("root", axis=axis, value=b, layout='sfdp'))
     # creation of nodes
     elif len(data) >= 2:
+
+        if axis == 6:
+            values_kd_x.append(b)
+        elif axis == 7:
+            values_kd_y.append(b)
+        else:
+            values_kd_z.append(b)
+
         nodes.append(Node('l' + str(len(nodes)), parent=node, axis=axis, value=b, dir=dir))
 
     count = count + 1

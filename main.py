@@ -1,7 +1,6 @@
 import ast
 import os
 import sys
-
 import pandas as pd
 from anytree.exporter import DictExporter
 from anytree.exporter import DotExporter
@@ -16,20 +15,26 @@ from update import update_kd, update_oct
 
 os.environ["PATH"] += os.pathsep + 'C:\Program Files (x86)\Graphviz2.38\\bin\\'
 sys.setrecursionlimit(13000)
+
+
 max_id = 0
 max_id_oct = 0
 
+#THIS THE CHOISE MENU FOR THE TREE YOU WANT TO USE
 print("THIS IS A MENU")
 print("TYPE THE NUMBER OF THE CHOICE YOU WANT TO RUN")
 print("1. OCT-TREE")
 print("2. KD-TREE")
 tree_choice = input()
 tree_choice = int(tree_choice)
+
+#THIS IS THE CHOISE FOR THE SIZE OF THE DATASHEET
 print("Choose data sheet size (20 , 100 , 1000 , all) (all is 12666)")
 print("type on of the choises (20 , 100 , 1000 , all) ")
 data_size = input()
 sheet_name = "airports-extended" + str(data_size) + ".txt"
 
+#PRE-PROCESING OF THE DATA SHEET
 data = pd.read_csv(sheet_name, sep=",", header=None)
 data.columns = ["Airport ID", "Name", "City", "Country", "IATA", "ICAO", "Latitude", "Longitude", "Altitude",
                 "Timezone", "DST", "Tz database time zone", "Type", "Source"]
@@ -38,7 +43,7 @@ data.drop_duplicates(subset=("Latitude", "Longitude", "Altitude"), keep='first',
 max_id = max(data.iloc[:, 0])
 max_id_oct = max_id
 
-
+#CHOICE FOR IMPORT OR BUILD AT THE START
 print("Would you like to run build or import ")
 print("1. build ")
 print("2. import")
@@ -99,6 +104,7 @@ while True:
             build_kd(data, 6, 0, "root", "root")
             end = timer()
         print(end - start)
+        #DotExporter(nodes[0]).to_picture("poly_screen/20treekd.png")
     # ===================================================================================================================
 
     elif choice == "2":
@@ -131,20 +137,13 @@ while True:
         x = x.split(",")
         point = [float(x[0]), float(x[1]), float(x[2])]
 
-        '''if tree_choice == 1:
-            res = search_oct(nodes_oct[0], point)
-        elif tree_choice == 2:
-            res = search(nodes[0], point)
-        if not res == False:
-            DotExporter(res.parent.parent).to_picture("tree_png/delete_before.png")'''
-
         if tree_choice == 1:
             start = timer()
             res = delete_oct(nodes_oct[0], point)
             end = timer()
         elif tree_choice == 2:
             start = timer()
-            res = del_node = delete_kd(nodes[0], point)
+            res = delete_kd(nodes[0], point)
             end = timer()
         print(end - start)
         if not res:
@@ -183,13 +182,6 @@ while True:
         point = [float(x[0]), float(x[1]), float(x[2])]
         print("give the data of the update separating them with  ,  (NAME = NEW_ , VALUE = NEW_)")
         data_upt = input()
-
-        '''if tree_choice == 1:
-            res = search_oct(nodes_oct[0], point)
-        elif tree_choice == 2:
-            res = search(nodes[0], point)
-        if not res == False:
-            DotExporter(res.parent.parent).to_picture("tree_png/update_before.png")'''
 
         if tree_choice == 1:
             start = timer()
