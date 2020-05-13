@@ -57,10 +57,11 @@ def insert_kd(node_root, point, ins_data, max_id):
     max_id = max_id + 1
     # insert is like search at the core so we search for the position to insert
     # if we find a leaf then either the point already exists or we have to vreate a new node and put both under it
+    print(node_root)
     if node_root.is_leaf:
         # Checking if point already exist in tree
         if round(float(node_root.Latitude), 4) == round(float(point[0]), 4) and\
-                round(float(node_root.Longitude),4) == round(float(point[1]), 4)\
+                round(float(node_root.Longitude), 4) == round(float(point[1]), 4)\
                 and round(float(node_root.Altitude), 4) == round(float(point[2]), 4):
             print("The x,y,z axis you inputed is already in the tree")
             return False
@@ -110,6 +111,7 @@ def insert_kd(node_root, point, ins_data, max_id):
             res = new_node
 
     else:
+        print("hello")
         axis = node_root.depth % 3
 
         # We search for the postition toi put the node we want to inser
@@ -117,13 +119,17 @@ def insert_kd(node_root, point, ins_data, max_id):
         if round(float(node_root.value), 4) >= round(float(point[axis]), 4):
             # If there is nothing on this side and we want to isnert a node we just create a new node here
             if len(node_root.children) == 0:
-                node_root._NodeMixin__children[0] = nodes.append(insert_leaf('leaf_Left ' + str(max_id), ins_data, "left", node_root, max_id,"kd"))
+                new_leaf = insert_leaf('leaf_Left ' + str(max_id), ins_data, "left", node_root, max_id,"kd")
+                nodes.append(new_leaf)
+                node_root._NodeMixin__children[0] = new_leaf
                 return node_root._NodeMixin__children[0]
             child = node_root.children[0]
 
         elif round(float(node_root.value), 4) < round(float(point[axis]), 4):
             if len(node_root.children) == 1:
-                node_root._NodeMixin__children[1] = nodes.append(insert_leaf('leaf_right ' + str(max_id), ins_data, "right", node_root, max_id,"kd"))
+                new_leaf = insert_leaf('leaf_right ' + str(max_id), ins_data, "right", node_root, max_id, "kd")
+                nodes.append(new_leaf)
+                node_root._NodeMixin__children[1] = new_leaf
                 return node_root._NodeMixin__children[1]
             child = node_root.children[1]
 
