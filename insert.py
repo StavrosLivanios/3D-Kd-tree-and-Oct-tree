@@ -57,7 +57,6 @@ def insert_kd(node_root, point, ins_data, max_id):
     max_id = max_id + 1
     # insert is like search at the core so we search for the position to insert
     # if we find a leaf then either the point already exists or we have to vreate a new node and put both under it
-    print(node_root)
     if node_root.is_leaf:
         # Checking if point already exist in tree
         if round(float(node_root.Latitude), 4) == round(float(point[0]), 4) and\
@@ -111,7 +110,6 @@ def insert_kd(node_root, point, ins_data, max_id):
             res = new_node
 
     else:
-        print("hello")
         axis = node_root.depth % 3
 
         # We search for the postition toi put the node we want to inser

@@ -10,6 +10,7 @@ nodes_oct = []
 oct_lists_temp = []
 counter_list = 0
 
+
 # --------------------------------------------------LIST-SEPERATOR-------------------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------------------------------------
 
@@ -79,25 +80,9 @@ def build_kd(data, axis, count, node, dir):
 
     # creation of root node of kd-tree
     if count == 0:
-
-        if axis == 6:
-            values_kd_x.append(b)
-        elif axis == 7:
-            values_kd_y.append(b)
-        else:
-            values_kd_z.append(b)
-
         nodes.append(Node("root", axis=axis, value=b, layout='sfdp'))
     # creation of nodes
     elif len(data) >= 2:
-
-        if axis == 6:
-            values_kd_x.append(b)
-        elif axis == 7:
-            values_kd_y.append(b)
-        else:
-            values_kd_z.append(b)
-
         nodes.append(Node('l' + str(len(nodes)), parent=node, axis=axis, value=b, dir=dir))
 
     count = count + 1

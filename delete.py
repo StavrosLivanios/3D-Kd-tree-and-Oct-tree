@@ -114,7 +114,12 @@ def delete_oct(node_root, point):
         ind = 0
         for i in node.parent.parent._NodeMixin__children:
             if node.parent.position == i.position:
-                node.parent.parent._NodeMixin__children[ind] = node.siblings[0]
+                #node.parent.parent._NodeMixin__children[ind] = node.siblings[0]
+                temp_child = node.parent.parent._NodeMixin__children
+                temp_child[ind] = node.siblings[0]
+                node.parent.parent._NodeMixin__children = []
+                node.siblings[0].parent = node.parent.parent
+                node.parent.parent._NodeMixin__children = temp_child
             ind = ind + 1
 
     else:
@@ -126,3 +131,4 @@ def delete_oct(node_root, point):
             ind = ind + 1
 
     return node
+
