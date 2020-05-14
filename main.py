@@ -6,6 +6,7 @@ from timeit import default_timer as timer
 # imports for KD and OCT trees
 from build import build_kd, nodes, build_oct, nodes_oct
 from delete import delete_kd, delete_oct
+from find_time import compare_times
 from insert import insert_kd, insert_oct
 from search import search, search_oct
 from update import update_kd, update_oct
@@ -15,16 +16,20 @@ from update import update_kd, update_oct
 
 max_id = 0
 max_id_oct = 0
-
+tree_choice = 3
 #THIS THE CHOISE MENU FOR THE TREE YOU WANT TO USE
 #print("THIS IS A MENU")
-print("==================================================")
-print("Choose the data structure by typing one of  the numbers showed below:")
-print("1. OCT-TREE")
-print("2. KD-TREE")
-print("==================================================")
-tree_choice = input()
-tree_choice = int(tree_choice)
+while tree_choice == 3 :
+    print("==================================================")
+    print("Choose the data structure by typing one of  the numbers showed below:")
+    print("1. OCT-TREE")
+    print("2. KD-TREE")
+    print("3. Compare times for search and Delete")
+    print("==================================================")
+    tree_choice = input()
+    tree_choice = int(tree_choice)
+    if tree_choice == 3:
+        compare_times()
 
 #THIS IS THE CHOISE FOR THE SIZE OF THE DATASHEET
 print("==================================================")
@@ -83,37 +88,17 @@ while True:
 
     print("==================================================")
     print("Type the number of the  action you want to execute")
-    print("1. Build tree")
-    print("2. Search")
-    print("3. Delete")
-    print("4. Insert")
-    print("5. Update")
-    print("6. Export")
-    print("7. Import")
-    print("8. Change tree (kd - oct)")
-    print("9. Exit")
+    print("1. Search")
+    print("2. Delete")
+    print("3. Insert")
+    print("4. Update")
+    print("5. Export")
+    print("6. Import")
+    print("7. Exit")
     print("==================================================")
     choice = input()
 
-    # ===================================================================================================================
-
     if choice == "1":
-
-
-
-        if tree_choice == 1:
-            start = timer()
-            build_oct(data, "root", 0, 0, 0)
-            end = timer()
-        elif tree_choice == 2:
-            start = timer()
-            build_kd(data, 6, 0, "root", "root")
-            end = timer()
-        print(end - start)
-
-    # ===================================================================================================================
-
-    elif choice == "2":
         print("GIVE THE POINT YOU WANT TO SEARCH FOR as x,y,z")
         x = input()
         x = x.replace(" ", "")
@@ -135,7 +120,7 @@ while True:
 
     # ===================================================================================================================
 
-    elif choice == "3":
+    elif choice == "2":
         print("Give the x,y,z of the point you want to delete")
         x = input()
         x = x.replace(" ", "")
@@ -155,7 +140,7 @@ while True:
             print("The point doesn't exist")
 
     # ===================================================================================================================
-    elif choice == "4":
+    elif choice == "3":
         print("Give the data of the node you want to insert separated by ',' (don't give id)")
         pin = input()
         pin = pin.replace("\"", "")
@@ -176,7 +161,7 @@ while True:
 
     # ===================================================================================================================
 
-    elif choice == "5":
+    elif choice == "4":
 
         print("Give the x,y,z of the point you want to update")
         x = input()
@@ -200,7 +185,7 @@ while True:
 
     # ===================================================================================================================
 
-    elif choice == "6":
+    elif choice == "5":
         exporter = DictExporter()
         if tree_choice == 1:
             data2 = exporter.export(nodes_oct[0])
@@ -216,7 +201,7 @@ while True:
 
     # ===================================================================================================================
 
-    elif choice == "7":
+    elif choice == "6":
         importer = DictImporter()
         if tree_choice == 1:
             dict = ast.literal_eval(open("tree_save/oct_export.txt", encoding="utf-8").read())
@@ -231,22 +216,6 @@ while True:
             nodes2 = importer.import_(dict)
             nodes.append(nodes2)
         print("A file with the tree has been imported")
-    # ===================================================================================================================
-    elif choice == "8":
-        if tree_choice == 1:
-            tree_choice == 2
-            if len(nodes_oct) == 0:
-                build_oct(data, "root", 0, 0, 0)
-                print("Tree changed to kd and build has been called")
-            else:
-                print("Tree changed to kd")
-        elif tree_choice == 2:
-            tree_choice == 1
-            if len(nodes) == 0:
-                build_oct(data, "root", 0, 0, 0)
-                print("Tree changed to oct and build has been called")
-            else:
-                print("Tree changed to oct")
     # ===================================================================================================================
     else:
         break
