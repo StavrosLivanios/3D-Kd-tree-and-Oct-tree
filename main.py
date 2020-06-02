@@ -15,7 +15,7 @@ from search import search, search_oct
 from update import update_kd, update_oct
 
 sys.setrecursionlimit(20000)
-#os.environ["PATH"] += os.pathsep + 'C:\Program Files (x86)\Graphviz2.38\\bin\\'
+os.environ["PATH"] += os.pathsep + 'C:\Program Files (x86)\Graphviz2.38\\bin\\'
 
 max_id = 0
 max_id_oct = 0
@@ -61,9 +61,9 @@ choise_2 = int(input())
 if choise_2 == 1:
     if tree_choice == 1:
         start = timer()
-        build_oct(data, "root", 0, 0, 0, 0, 0, 0, 0)
-        end = timer()
+        build_oct(data, "root", 0, 0, 0, 0, 0, 0, 0 ,0,0,0)
         #DotExporter(nodes_oct[0]).to_picture("oct_tree.png")
+        end = timer()
     elif tree_choice == 2:
         start = timer()
         build_kd(data, 6, 0, "root", "root")
@@ -154,13 +154,16 @@ while True:
             start = timer()
             res = insert_oct(nodes_oct[0], point, pin, int(max_id_oct))
             end = timer()
+            max_id_oct=int(max_id_oct)+1
         elif tree_choice == 2:
             start = timer()
             res = insert_kd(nodes[0], point, pin, int(max_id))
             end = timer()
+            max_id=int(max_id)+1
         print(end - start)
         if not res:
             print("The point already exist")
+        #DotExporter(nodes_oct[0]).to_picture("insert.png")
 
     # ===================================================================================================================
 

@@ -110,11 +110,11 @@ def delete_oct(node_root, point):
     if len(node.parent._NodeMixin__children) == 2:
 
         node.siblings[0].position = node.parent.position
-
+        sibling =  node.siblings[0]
         ind = 0
         for i in node.parent.parent._NodeMixin__children:
             if node.parent.position == i.position:
-                #node.parent.parent._NodeMixin__children[ind] = node.siblings[0]
+                # node.parent.parent._NodeMixin__children[ind] = node.siblings[0]
                 temp_child = node.parent.parent._NodeMixin__children
                 temp_child[ind] = node.siblings[0]
                 node.parent.parent._NodeMixin__children = []
@@ -126,8 +126,17 @@ def delete_oct(node_root, point):
         ind = 0
         for i in node.parent._NodeMixin__children:
             if node.position == i.position:
-                del node.parent._NodeMixin__children[ind]
-                return node
+                if i.is_leaf == True:
+                    x = i.Latitude
+                    y = i.Longitude
+                    z = i.Altitude
+                else:
+                    x = i.value_x
+                    y = i.value_y
+                    z = i.value_z
+                if round(float(x), 4) == round(float(point[0]), 4) and round(float(y), 4) == round(float(point[1]),4) and int(z) == int(point[2]):
+                    del node.parent._NodeMixin__children[ind]
+                    return node
             ind = ind + 1
 
     return node
