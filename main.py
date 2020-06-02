@@ -62,7 +62,7 @@ if choise_2 == 1:
     if tree_choice == 1:
         start = timer()
         build_oct(data, "root", 0, 0, 0, 0, 0, 0, 0 ,0,0,0)
-        #DotExporter(nodes_oct[0]).to_picture("oct_tree.png")
+        DotExporter(nodes_oct[0]).to_picture("oct_tree.png")
         end = timer()
     elif tree_choice == 2:
         start = timer()
@@ -153,6 +153,7 @@ while True:
         if tree_choice == 1:
             start = timer()
             res = insert_oct(nodes_oct[0], point, pin, int(max_id_oct))
+            print(res)
             end = timer()
             max_id_oct=int(max_id_oct)+1
         elif tree_choice == 2:
@@ -163,7 +164,7 @@ while True:
         print(end - start)
         if not res:
             print("The point already exist")
-        #DotExporter(nodes_oct[0]).to_picture("insert.png")
+        DotExporter(nodes_oct[0]).to_picture("insert.png")
 
     # ===================================================================================================================
 
