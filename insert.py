@@ -52,6 +52,8 @@ def find_position(point, meso_point):
         position = 7
     return position
 
+#==========================================KD=================================================================
+#=============================================================================================================
 
 def insert_kd(node_root, point, ins_data, max_id):
     max_id = max_id + 1
@@ -136,6 +138,8 @@ def insert_kd(node_root, point, ins_data, max_id):
 
     return res
 
+#==========================================OCT================================================================
+#=============================================================================================================
 
 def insert_oct(node_root, point, ins_data, max_id):
     max_id = max_id + 1
@@ -158,254 +162,8 @@ def insert_oct(node_root, point, ins_data, max_id):
             ins_node = insert_leaf('leaf ' + str(max_id), ins_data, position, node_root, max_id, "oct")
             nodes_oct.append(ins_node)
             res = ins_node
-            num_per_pos = [0, 0, 0, 0, 0, 0, 0, 0]
-            for i in node_root.children:
-                num_per_pos[i.position] = num_per_pos[i.position] + 1
 
-            temp_childs = node_root._NodeMixin__children
-
-            for i in range(8):
-                if num_per_pos[i] > 1:
-                    if i == 0:
-                        temp_meso_x = (node_root.low_x + node_root.value_x) / 2
-                        temp_meso_y = (node_root.low_y + node_root.value_y) / 2
-                        temp_meso_z = (node_root.low_z + node_root.value_z) / 2
-                        nodes_oct.append(
-                            Node('l' + str(len(nodes_oct)), parent=node_root, position=i, value_x=temp_meso_x,
-                                 value_y=temp_meso_y,
-                                 value_z=temp_meso_z, low_x=node_root.low_x, high_x=node_root.value_x,
-                                 low_y=node_root.low_y, high_y=node_root.value_y,
-                                 low_z=node_root.low_z,
-                                 high_z=node_root.value_z))
-                        temp_parent = nodes_oct[-1]
-
-                    elif i == 2:
-                        temp_meso_x = (node_root.low_x + node_root.value_x) / 2
-                        temp_meso_y = (node_root.value_y + node_root.high_y) / 2
-                        temp_meso_z = (node_root.low_z + node_root.value_z) / 2
-                        nodes_oct.append(
-                            Node('l' + str(len(nodes_oct)), parent=node_root, position=i, value_x=temp_meso_x,
-                                 value_y=temp_meso_y,
-                                 value_z=temp_meso_z, low_x=node_root.low_x, high_x=node_root.value_x,
-                                 low_y=node_root.value_y, high_y=node_root.high_y,
-                                 low_z=node_root.low_z,
-                                 high_z=node_root.value_z))
-                        temp_parent = nodes_oct[-1]
-
-                    elif i == 4:
-                        temp_meso_x = (node_root.value_x + node_root.high_x) / 2
-                        temp_meso_y = (node_root.low_y + node_root.value_y) / 2
-                        temp_meso_z = (node_root.low_z + node_root.value_z) / 2
-                        nodes_oct.append(
-                            Node('l' + str(len(nodes_oct)), parent=node_root, position=i, value_x=temp_meso_x,
-                                 value_y=temp_meso_y,
-                                 value_z=temp_meso_z, low_x=node_root.value_x, high_x=node_root.high_x,
-                                 low_y=node_root.low_y, high_y=node_root.value_y,
-                                 low_z=node_root.low_z,
-                                 high_z=node_root.value_z))
-                        temp_parent = nodes_oct[-1]
-
-                    elif i == 6:
-                        temp_meso_x = (node_root.value_x + node_root.high_x) / 2
-                        temp_meso_y = (node_root.value_y + node_root.high_y) / 2
-                        temp_meso_z = (node_root.low_z + node_root.value_z) / 2
-                        nodes_oct.append(
-                            Node('l' + str(len(nodes_oct)), parent=node_root, position=i, value_x=temp_meso_x,
-                                 value_y=temp_meso_y,
-                                 value_z=temp_meso_z, low_x=node_root.value_x, high_x=node_root.high_x,
-                                 low_y=node_root.value_y, high_y=node_root.high_y,
-                                 low_z=node_root.low_z,
-                                 high_z=node_root.value_z))
-                        temp_parent = nodes_oct[-1]
-                    elif i == 1:
-                        temp_meso_x = (node_root.low_x + node_root.value_x) / 2
-                        temp_meso_y = (node_root.low_y + node_root.value_y) / 2
-                        temp_meso_z = (node_root.value_z + node_root.high_z) / 2
-                        nodes_oct.append(
-                            Node('l' + str(len(nodes_oct)), parent=node_root, position=i, value_x=temp_meso_x,
-                                 value_y=temp_meso_y,
-                                 value_z=temp_meso_z, low_x=node_root.low_x, high_x=node_root.value_x,
-                                 low_y=node_root.low_y, high_y=node_root.value_y,
-                                 low_z=node_root.value_z,
-                                 high_z=node_root.value_z))
-                        temp_parent = nodes_oct[-1]
-                    elif i == 3:
-                        temp_meso_x = (node_root.low_x + node_root.value_x) / 2
-                        temp_meso_y = (node_root.value_y + node_root.high_y) / 2
-                        temp_meso_z = (node_root.value_z + node_root.high_z) / 2
-                        nodes_oct.append(
-                            Node('l' + str(len(nodes_oct)), parent=node_root, position=i, value_x=temp_meso_x,
-                                 value_y=temp_meso_y,
-                                 value_z=temp_meso_z, low_x=node_root.low_x, high_x=node_root.value_x,
-                                 low_y=node_root.value_y, high_y=node_root.high_y,
-                                 low_z=node_root.value_z,
-                                 high_z=node_root.value_z))
-                        temp_parent = nodes_oct[-1]
-                    elif i == 5:
-                        temp_meso_x = (node_root.value_x + node_root.high_x) / 2
-                        temp_meso_y = (node_root.low_y + node_root.value_y) / 2
-                        temp_meso_z = (node_root.value_z + node_root.high_z) / 2
-                        nodes_oct.append(
-                            Node('l' + str(len(nodes_oct)), parent=node_root, position=i, value_x=temp_meso_x,
-                                 value_y=temp_meso_y,
-                                 value_z=temp_meso_z, low_x=node_root.value_x, high_x=node_root.high_x,
-                                 low_y=node_root.low_y, high_y=node_root.value_y,
-                                 low_z=node_root.value_z,
-                                 high_z=node_root.high_z))
-                        temp_parent = nodes_oct[-1]
-
-                    elif i == 7:
-                        temp_meso_x = (node_root.value_x + node_root.high_x) / 2
-                        temp_meso_y = (node_root.value_y + node_root.high_y) / 2
-                        temp_meso_z = (node_root.value_z + node_root.high_z) / 2
-                        nodes_oct.append(
-                            Node('l' + str(len(nodes_oct)), parent=node_root, position=i, value_x=temp_meso_x,
-                                 value_y=temp_meso_y,
-                                 value_z=temp_meso_z, low_x=node_root.value_x, high_x=node_root.high_x,
-                                 low_y=node_root.value_y, high_y=node_root.high_y,
-                                 low_z=node_root.value_z,
-                                 high_z=node_root.high_z))
-                        temp_parent = nodes_oct[-1]
-
-                    temp_childs_cp = copy(temp_childs)
-                    for j in temp_childs:
-                        if j.position == i:
-                            if j.is_leaf == True:
-                                j.position = find_position([j.Latitude, j.Longitude, j.Altitude], [temp_parent.value_x,temp_parent.value_y,temp_parent.value_z])
-                                j.parent = temp_parent
-                                temp_childs_cp.remove(j)
-                    temp_childs=temp_childs_cp
-
-
-
-
-                    while len(temp_parent.children)>8:
-                        num_per_pos2 = [0, 0, 0, 0, 0, 0, 0, 0]
-                        for k in temp_parent.children:
-                            num_per_pos2[k.position] = num_per_pos2[k.position] + 1
-
-                        temp_childs2 = temp_parent._NodeMixin__children
-
-                        for k in range(8):
-                            if num_per_pos2[k] > 1:
-                                if k == 0:
-                                    temp_meso_x = (temp_parent.low_x + temp_parent.value_x) / 2
-                                    temp_meso_y = (temp_parent.low_y + temp_parent.value_y) / 2
-                                    temp_meso_z = (temp_parent.low_z + temp_parent.value_z) / 2
-                                    nodes_oct.append(
-                                        Node('l' + str(len(nodes_oct)), parent=temp_parent, position=k,
-                                             value_x=temp_meso_x,
-                                             value_y=temp_meso_y,
-                                             value_z=temp_meso_z, low_x=temp_parent.low_x, high_x=temp_parent.value_x,
-                                             low_y=temp_parent.low_y, high_y=temp_parent.value_y,
-                                             low_z=temp_parent.low_z,
-                                             high_z=temp_parent.value_z))
-                                    temp_parent = nodes_oct[-1]
-
-                                elif k == 2:
-                                    temp_meso_x = (temp_parent.low_x + temp_parent.value_x) / 2
-                                    temp_meso_y = (temp_parent.value_y + temp_parent.high_y) / 2
-                                    temp_meso_z = (temp_parent.low_z + temp_parent.value_z) / 2
-                                    nodes_oct.append(
-                                        Node('l' + str(len(nodes_oct)), parent=temp_parent, position=k,
-                                             value_x=temp_meso_x,
-                                             value_y=temp_meso_y,
-                                             value_z=temp_meso_z, low_x=temp_parent.low_x, high_x=temp_parent.value_x,
-                                             low_y=temp_parent.value_y, high_y=temp_parent.high_y,
-                                             low_z=temp_parent.low_z,
-                                             high_z=temp_parent.value_z))
-                                    temp_parent = nodes_oct[-1]
-
-                                elif k == 4:
-                                    temp_meso_x = (temp_parent.value_x + temp_parent.high_x) / 2
-                                    temp_meso_y = (temp_parent.low_y + temp_parent.value_y) / 2
-                                    temp_meso_z = (temp_parent.low_z + temp_parent.value_z) / 2
-                                    nodes_oct.append(
-                                        Node('l' + str(len(nodes_oct)), parent=temp_parent, position=k,
-                                             value_x=temp_meso_x,
-                                             value_y=temp_meso_y,
-                                             value_z=temp_meso_z, low_x=temp_parent.value_x, high_x=temp_parent.high_x,
-                                             low_y=temp_parent.low_y, high_y=temp_parent.value_y,
-                                             low_z=temp_parent.low_z,
-                                             high_z=temp_parent.value_z))
-                                    temp_parent = nodes_oct[-1]
-
-                                elif k == 6:
-                                    temp_meso_x = (temp_parent.value_x + temp_parent.high_x) / 2
-                                    temp_meso_y = (temp_parent.value_y + temp_parent.high_y) / 2
-                                    temp_meso_z = (temp_parent.low_z + temp_parent.value_z) / 2
-                                    nodes_oct.append(
-                                        Node('l' + str(len(nodes_oct)), parent=temp_parent, position=k,
-                                             value_x=temp_meso_x,
-                                             value_y=temp_meso_y,
-                                             value_z=temp_meso_z, low_x=temp_parent.value_x, high_x=temp_parent.high_x,
-                                             low_y=temp_parent.value_y, high_y=temp_parent.high_y,
-                                             low_z=temp_parent.low_z,
-                                             high_z=temp_parent.value_z))
-                                    temp_parent = nodes_oct[-1]
-                                elif k == 1:
-                                    temp_meso_x = (temp_parent.low_x + temp_parent.value_x) / 2
-                                    temp_meso_y = (temp_parent.low_y + temp_parent.value_y) / 2
-                                    temp_meso_z = (temp_parent.value_z + temp_parent.high_z) / 2
-                                    temp_parent = nodes_oct.append(
-                                        Node('l' + str(len(nodes_oct)), parent=temp_parent, position=k,
-                                             value_x=temp_meso_x,
-                                             value_y=temp_meso_y,
-                                             value_z=temp_meso_z, low_x=temp_parent.low_x, high_x=temp_parent.value_x,
-                                             low_y=temp_parent.low_y, high_y=temp_parent.value_y,
-                                             low_z=temp_parent.value_z,
-                                             high_z=temp_parent.value_z))
-                                elif k == 3:
-                                    temp_meso_x = (temp_parent.low_x + temp_parent.value_x) / 2
-                                    temp_meso_y = (temp_parent.value_y + temp_parent.high_y) / 2
-                                    temp_meso_z = (temp_parent.value_z + temp_parent.high_z) / 2
-                                    nodes_oct.append(
-                                        Node('l' + str(len(nodes_oct)), parent=temp_parent, position=k,
-                                             value_x=temp_meso_x,
-                                             value_y=temp_meso_y,
-                                             value_z=temp_meso_z, low_x=temp_parent.low_x, high_x=temp_parent.value_x,
-                                             low_y=temp_parent.value_y, high_y=temp_parent.high_y,
-                                             low_z=temp_parent.value_z,
-                                             high_z=temp_parent.value_z))
-                                    temp_parent = nodes_oct[-1]
-                                elif k == 5:
-                                    temp_meso_x = (temp_parent.value_x + temp_parent.high_x) / 2
-                                    temp_meso_y = (temp_parent.low_y + temp_parent.value_y) / 2
-                                    temp_meso_z = (temp_parent.value_z + temp_parent.high_z) / 2
-                                    nodes_oct.append(
-                                        Node('l' + str(len(nodes_oct)), parent=temp_parent, position=k,
-                                             value_x=temp_meso_x,
-                                             value_y=temp_meso_y,
-                                             value_z=temp_meso_z, low_x=temp_parent.value_x, high_x=temp_parent.high_x,
-                                             low_y=temp_parent.low_y, high_y=temp_parent.value_y,
-                                             low_z=temp_parent.value_z,
-                                             high_z=temp_parent.high_z))
-                                    temp_parent = nodes_oct[-1]
-
-                                elif k == 7:
-                                    temp_meso_x = (temp_parent.value_x + temp_parent.high_x) / 2
-                                    temp_meso_y = (temp_parent.value_y + temp_parent.high_y) / 2
-                                    temp_meso_z = (temp_parent.value_z + temp_parent.high_z) / 2
-                                    nodes_oct.append(
-                                        Node('l' + str(len(nodes_oct)), parent=temp_parent, position=k,
-                                             value_x=temp_meso_x,
-                                             value_y=temp_meso_y,
-                                             value_z=temp_meso_z, low_x=temp_parent.value_x, high_x=temp_parent.high_x,
-                                             low_y=temp_parent.value_y, high_y=temp_parent.high_y,
-                                             low_z=temp_parent.value_z,
-                                             high_z=temp_parent.high_z))
-                                    temp_parent = nodes_oct[-1]
-
-                                temp_childs_cp2 = copy(temp_childs2)
-                                for j in temp_childs2:
-                                    if j.position == i:
-                                        if j.is_leaf == True:
-                                            j.position = find_position([j.Latitude, j.Longitude, j.Altitude],
-                                                                       [temp_parent.value_x, temp_parent.value_y,
-                                                                        temp_parent.value_z])
-                                            j.parent = temp_parent
-                                            temp_childs_cp2.remove(j)
-                                temp_childs2 = temp_childs_cp
+            split_leafs(node_root)
 
         else:
             nodes_oct.append(insert_leaf('leaf ' + str(max_id), ins_data, position, node_root, max_id, "oct"))
@@ -415,3 +173,88 @@ def insert_oct(node_root, point, ins_data, max_id):
     return res
 
 #===================================================================================================================================
+
+def create_leaf_insert(node_root,i,temp_meso_x,temp_meso_y,temp_meso_z):
+    nodes_oct.append(
+        Node('l' + str(len(nodes_oct)), parent=node_root, position=i, value_x=temp_meso_x,
+             value_y=temp_meso_y,
+             value_z=temp_meso_z, low_x=node_root.low_x, high_x=node_root.value_x,
+             low_y=node_root.low_y, high_y=node_root.value_y,
+             low_z=node_root.low_z,
+             high_z=node_root.value_z))
+
+
+def split_leafs(node_root):
+    num_per_pos = [0, 0, 0, 0, 0, 0, 0, 0]
+    for i in node_root.children:
+        num_per_pos[i.position] = num_per_pos[i.position] + 1
+
+    temp_childs = node_root._NodeMixin__children
+
+    for i in range(8):
+        if num_per_pos[i] > 1:
+            if i == 0:
+                temp_meso_x = (node_root.low_x + node_root.value_x) / 2
+                temp_meso_y = (node_root.low_y + node_root.value_y) / 2
+                temp_meso_z = (node_root.low_z + node_root.value_z) / 2
+                create_leaf_insert(node_root, i, temp_meso_x, temp_meso_y, temp_meso_z)
+                temp_parent = nodes_oct[-1]
+
+            elif i == 2:
+                temp_meso_x = (node_root.low_x + node_root.value_x) / 2
+                temp_meso_y = (node_root.value_y + node_root.high_y) / 2
+                temp_meso_z = (node_root.low_z + node_root.value_z) / 2
+                create_leaf_insert(node_root, i, temp_meso_x, temp_meso_y, temp_meso_z)
+                temp_parent = nodes_oct[-1]
+
+            elif i == 4:
+                temp_meso_x = (node_root.value_x + node_root.high_x) / 2
+                temp_meso_y = (node_root.low_y + node_root.value_y) / 2
+                temp_meso_z = (node_root.low_z + node_root.value_z) / 2
+                create_leaf_insert(node_root,i,temp_meso_x,temp_meso_y,temp_meso_z)
+                temp_parent = nodes_oct[-1]
+
+            elif i == 6:
+                temp_meso_x = (node_root.value_x + node_root.high_x) / 2
+                temp_meso_y = (node_root.value_y + node_root.high_y) / 2
+                temp_meso_z = (node_root.low_z + node_root.value_z) / 2
+                create_leaf_insert(node_root, i, temp_meso_x, temp_meso_y, temp_meso_z)
+                temp_parent = nodes_oct[-1]
+            elif i == 1:
+                temp_meso_x = (node_root.low_x + node_root.value_x) / 2
+                temp_meso_y = (node_root.low_y + node_root.value_y) / 2
+                temp_meso_z = (node_root.value_z + node_root.high_z) / 2
+                create_leaf_insert(node_root,i,temp_meso_x,temp_meso_y,temp_meso_z)
+                temp_parent = nodes_oct[-1]
+            elif i == 3:
+                temp_meso_x = (node_root.low_x + node_root.value_x) / 2
+                temp_meso_y = (node_root.value_y + node_root.high_y) / 2
+                temp_meso_z = (node_root.value_z + node_root.high_z) / 2
+                create_leaf_insert(node_root, i, temp_meso_x, temp_meso_y, temp_meso_z)
+                temp_parent = nodes_oct[-1]
+            elif i == 5:
+                temp_meso_x = (node_root.value_x + node_root.high_x) / 2
+                temp_meso_y = (node_root.low_y + node_root.value_y) / 2
+                temp_meso_z = (node_root.value_z + node_root.high_z) / 2
+                create_leaf_insert(node_root, i, temp_meso_x, temp_meso_y, temp_meso_z)
+                temp_parent = nodes_oct[-1]
+
+            elif i == 7:
+                temp_meso_x = (node_root.value_x + node_root.high_x) / 2
+                temp_meso_y = (node_root.value_y + node_root.high_y) / 2
+                temp_meso_z = (node_root.value_z + node_root.high_z) / 2
+                create_leaf_insert(node_root, i, temp_meso_x, temp_meso_y, temp_meso_z)
+                temp_parent = nodes_oct[-1]
+
+            temp_childs_cp = copy(temp_childs)
+            for j in temp_childs:
+                if j.position == i:
+                    if j.is_leaf == True:
+                        j.position = find_position([j.Latitude, j.Longitude, j.Altitude],
+                                                   [temp_parent.value_x, temp_parent.value_y, temp_parent.value_z])
+                        j.parent = temp_parent
+                        temp_childs_cp.remove(j)
+            temp_childs = temp_childs_cp
+
+            while len(temp_parent.children)>8:
+                split_leafs(temp_parent)
