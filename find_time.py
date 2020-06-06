@@ -57,20 +57,6 @@ def compare_times():
 
     #===============================================
 
-    time_table = []
-    for i in range(len(pinx)):
-        point = [pinx[i], piny[i], pinz[i]]
-        start = timer()
-        #delete_kd(nodes[0], point)
-        end = timer()
-
-        time_table.append(end - start)
-
-    sum_time = sum(time_table)
-    time = sum_time / len(pinx)
-    print("Delete : " + str(time) + " | max - " + str(max(time_table)) + " | min - " + str(min(time_table)))
-
-    # ===============================================
     # ===============================================
     # =================OCT=====================
     #===============================================
@@ -89,23 +75,37 @@ def compare_times():
     time = sum_time / len(pinx)
     print("Search : " + str(time) + " | max - " + str(max(time_table)) + " | min - " + str(min(time_table)))
 
-    #===============================================
+
+
+
+'''
 
     time_table = []
     for i in range(len(pinx)):
         point = [pinx[i], piny[i], pinz[i]]
         start = timer()
-        #delete_oct(nodes_oct[0], point)
+        delete_oct(nodes_oct[0], point)
         end = timer()
 
         time_table.append(end - start)
 
     sum_time = sum(time_table)
     time = sum_time / len(pinx)
-    print("Delete : " + str(time) + " | max - " + str(max(time_table)) + " | min - " + str(min(time_table)))
+    print("oct - Delete : " + str(time) + " | max - " + str(max(time_table)) + " | min - " + str(min(time_table)))
 
+    time_table = []
+    for i in range(978):
+        print(i)
+        point = [pinx[i], piny[i], pinz[i]]
+        start = timer()
+        delete_kd(nodes[0], point)
+        end = timer()
 
+        time_table.append(end - start)
 
+    sum_time = sum(time_table)
+    time = sum_time / 978
+    print("kd - Delete : " + str(time) + " | max - " + str(max(time_table)) + " | min - " + str(min(time_table)))
 
 
 
@@ -171,3 +171,4 @@ def compare_times():
     sum_time = sum(time_table)
     time = sum_time / len(pinx)
     print("kd - update : " + str(time) + " | max - " + str(max(time_table)) + " | min - " + str(min(time_table)))
+'''

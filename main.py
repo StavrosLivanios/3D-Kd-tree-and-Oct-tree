@@ -15,7 +15,7 @@ from search import search, search_oct
 from update import update_kd, update_oct
 
 sys.setrecursionlimit(20000)
-os.environ["PATH"] += os.pathsep + 'C:\Program Files (x86)\Graphviz2.38\\bin\\'
+#os.environ["PATH"] += os.pathsep + 'C:\Program Files (x86)\Graphviz2.38\\bin\\'
 
 max_id = 0
 max_id_oct = 0
@@ -27,7 +27,7 @@ while tree_choice == 3 :
     print("Choose the data structure by typing one of  the numbers showed below:")
     print("1. OCT-TREE")
     print("2. KD-TREE")
-    print("3. Compare times for search and Delete")
+    print("3. Compare times for search (for 12666)")
     print("==================================================")
     tree_choice = input()
     tree_choice = int(tree_choice)
@@ -62,12 +62,10 @@ if choise_2 == 1:
     if tree_choice == 1:
         start = timer()
         build_oct(data, "root", 0, 0, 0, 0, 0, 0, 0 ,0,0,0)
-        DotExporter(nodes_oct[0]).to_picture("oct_tree.png")
         end = timer()
     elif tree_choice == 2:
         start = timer()
         build_kd(data, 6, 0, "root", "root")
-        DotExporter(nodes[0]).to_picture("kd_tree.png")
         end = timer()
     print("The tree has been built successfully.")
     print(end - start)
@@ -224,11 +222,14 @@ while True:
             nodes2 = importer.import_(dict)
             nodes.append(nodes2)
         print("A file with the tree has been imported")
-    elif choice == "9":
+
+    # ===================================================================================================================
+
+    else:
+        break
+
+'''elif choice == "9":
         if tree_choice == 1:
             DotExporter(nodes_oct[0]).to_picture("oct_tree_protype.png")
         elif tree_choice == 2:
-            DotExporter(nodes[0]).to_picture("kd_tree_prototype.png")
-    # ===================================================================================================================
-    else:
-        break
+            DotExporter(nodes[0]).to_picture("kd_tree_prototype.png")'''
