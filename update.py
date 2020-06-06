@@ -26,7 +26,6 @@ def update_kd(node_root, data, point):
             change = 1
             temp_point[2] = float(value)
         else:
-            #print(atribute + "=" + value)
             strr = "node." + atribute + " = " + "\"" + value + "\""
             exec(strr)
 
@@ -65,7 +64,7 @@ def update_oct(node_root, data, point):
             change = 1
             temp_point[2] = float(value)
         else:
-            #print(atribute + "=" + value)
+
             strr = "node." + atribute + " = " + "\"" + value + "\""
             exec(strr)
 

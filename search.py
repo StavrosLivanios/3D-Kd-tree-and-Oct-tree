@@ -3,7 +3,6 @@ from insert import find_position
 def search(nodes, point):
     if nodes.is_leaf:
         if round(float(nodes.Latitude), 4) == round(float(point[0]), 4) and round(float(nodes.Longitude), 4) == round(float(point[1]), 4) and round(float(nodes.Altitude), 4) == round(float(point[2]), 4):
-        #if float(nodes.Latitude) - float(point[0]) < 10**-6 and float(nodes.Longitude) - float(point[1])< 10**-6 and float(nodes.Altitude) - float(point[2])< 10**-6:
             res = nodes
         else:
             res = False
@@ -22,41 +21,14 @@ def search(nodes, point):
 
 
 def search_oct(nodes, point):
-    if nodes.is_leaf:
-        if round(float(nodes.Latitude), 4) == round(float(point[0]), 4) and round(float(nodes.Longitude), 4) == round(float(point[1]), 4) and round(float(nodes.Altitude), 4) == round(float(point[2]), 4):
-            res = nodes
-        else:
-            res = False
-    else:
-        position = find_position(point, [nodes.value_x, nodes.value_y, nodes.value_z])
-        '''if nodes.value_x >= float(point[0]) and nodes.value_y >= float(point[1]) and nodes.value_z >= float(point[2]):
-            position = 0
-        elif nodes.value_x >= float(point[0]) and nodes.value_y >= float(point[1]) and nodes.value_z < float(point[2]):
-            position = 1
-        elif nodes.value_x >= float(point[0]) and nodes.value_y < float(point[1]) and nodes.value_z >= float(point[2]):
-            position = 2
-        elif nodes.value_x >= float(point[0]) and nodes.value_y < float(point[1]) and nodes.value_z < float(point[2]):
-            position = 3
-        elif nodes.value_x < float(point[0]) and nodes.value_y >= float(point[1]) and nodes.value_z >= float(point[2]):
-            position = 4
-        elif nodes.value_x < float(point[0]) and nodes.value_y >= float(point[1]) and nodes.value_z < float(point[2]):
-            position = 5
-        elif nodes.value_x < float(point[0]) and nodes.value_y < float(point[1]) and nodes.value_z >= float(point[2]):
-            position = 6
-        elif nodes.value_x < float(point[0]) and nodes.value_y < float(point[1]) and nodes.value_z < float(point[2]):
-            position = 7'''
+    position = find_position(point, [nodes.value_x, nodes.value_y, nodes.value_z])
+    for i in nodes._NodeMixin__children:
+        if i.position == position:
+            if i.is_leaf:
+                if round(float(i.Latitude), 4) == round(float(point[0]), 4) and round(float(i.Longitude), 4) == round(float(point[1]), 4) and int(i.Altitude) == int(point[2]):
+                    return i
+            else:
+                res = search_oct(i, point)
+                return res
 
-        if len(nodes.children) == 0:
-            return False
-        else:
-            child = False
-            for i in nodes.children:
-                if i.position == position:
-                    child = i
-
-        if child != False:
-            res = search_oct(child, point)
-        else:
-            res = False
-
-    return res
+    return False

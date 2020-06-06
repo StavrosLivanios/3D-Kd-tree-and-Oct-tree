@@ -1,33 +1,42 @@
 import pandas as pd
 import numpy as np
-from anytree import Node, RenderTree
-from anytree.exporter import DotExporter
-from anytree.dotexport import RenderTreeGraph
-import sys
-import os
-import graphviz
-
+from anytree import Node
 
 nodes = []
+values_kd_x = []
+values_kd_y = []
+values_kd_z = []
 nodes_oct = []
 oct_lists_temp = []
 counter_list = 0
 
 
-def create_oct_leaf(parent, i, j, oct_lists_temp):
-    nodes_oct.append(Node('leaf ' + str(oct_lists_temp[i].iloc[j, 0]), parent=parent, position=i,
-                          Airport_ID=oct_lists_temp[i].iloc[j, 0],
-                          Name=oct_lists_temp[i].iloc[j, 1], City=oct_lists_temp[i].iloc[j, 2],
-                          Country=oct_lists_temp[i].iloc[j, 3],
-                          IATA=oct_lists_temp[i].iloc[j, 4],
-                          ICAO=oct_lists_temp[i].iloc[j, 5],
-                          Latitude=oct_lists_temp[i].iloc[j, 6], Longitude=oct_lists_temp[i].iloc[j, 7],
-                          Altitude=oct_lists_temp[i].iloc[j, 8],
-                          Timezone=oct_lists_temp[i].iloc[j, 9],
-                          DST=oct_lists_temp[i].iloc[j, 10], Tz_database_time_zone=oct_lists_temp[i].iloc[j, 11],
-                          Type=oct_lists_temp[i].iloc[j, 12],
-                          Source=oct_lists_temp[i].iloc[j, 13]))
-    return nodes_oct[-1]
+def find_position(point, meso_point):
+    if meso_point[0] >= float(point[0]) and meso_point[1] >= float(point[1]) and meso_point[2] >= float(
+            point[2]):
+        position = 0
+    elif meso_point[0] >= float(point[0]) and meso_point[1] >= float(point[1]) and meso_point[2] < float(
+            point[2]):
+        position = 1
+    elif meso_point[0] >= float(point[0]) and meso_point[1] < float(point[1]) and meso_point[2] >= float(
+            point[2]):
+        position = 2
+    elif meso_point[0] >= float(point[0]) and meso_point[1] < float(point[1]) and meso_point[2] < float(
+            point[2]):
+        position = 3
+    elif meso_point[0] < float(point[0]) and meso_point[1] >= float(point[1]) and meso_point[2] >= float(
+            point[2]):
+        position = 4
+    elif meso_point[0] < float(point[0]) and meso_point[1] >= float(point[1]) and meso_point[2] < float(
+            point[2]):
+        position = 5
+    elif meso_point[0] < float(point[0]) and meso_point[1] < float(point[1]) and meso_point[2] >= float(
+            point[2]):
+        position = 6
+    elif meso_point[0] < float(point[0]) and meso_point[1] < float(point[1]) and meso_point[2] < float(
+            point[2]):
+        position = 7
+    return position
 
 
 # --------------------------------------------------LIST-SEPERATOR-------------------------------------------------------------------
@@ -141,9 +150,15 @@ def build_kd(data, axis, count, node, dir):
 # --------------------------------------------------OCT-TREE-------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------------------------------------
 
-def build_oct(data, parent,meso_x , meso_y, meso_z):
-
+def build_oct(data, parent, low_x, high_x, low_y, high_y, low_z, high_z, i ,meso_x,meso_y,meso_z):
     if parent == "root":
+        low_x = data.Latitude.min()
+        high_x = data.Latitude.max()
+        low_y = data.Longitude.min()
+        high_y = data.Longitude.max()
+        low_z = data.Altitude.min()
+        high_z = data.Altitude.max()
+
         min_x = data.min()["Latitude"]
         max_x = data.max()["Latitude"]
         meso_x = (min_x + max_x) / 2
@@ -156,46 +171,146 @@ def build_oct(data, parent,meso_x , meso_y, meso_z):
         max_z = data.max()["Altitude"]
         meso_z = (max_z + min_z) / 2
 
-        nodes_oct.append(Node("root", value_x=meso_x, value_y=meso_y, value_z=meso_z, layout='sfdp'))
+        nodes_oct.append(
+            Node("root", value_x=meso_x, value_y=meso_y, value_z=meso_z, layout='sfdp', low_x=low_x, high_x=high_x,
+                 low_y=low_y, high_y=high_y, low_z=low_z, high_z=high_z))
         parent = nodes_oct[-1]
 
-    global oct_lists_temp
-    oct_lists_temp = []
-    list_separator(data, 6, [meso_x, meso_y, meso_z])
-    oct_lists = oct_lists_temp
 
 
-    for i in range(8):
+    if (len(data) <= 8) and (len(data) > 0):
+        for j in range(len(data)):
+            pos = find_position([float(data.iloc[j, 6]), float(data.iloc[j, 7]), float(data.iloc[j, 8])],[parent.value_x, parent.value_y, parent.value_z])
+            nodes_oct.append(Node('leaf ' + str(data.iloc[j, 0]), parent=parent, position=pos,
+                                  Airport_ID=data.iloc[j, 0],
+                                  Name=data.iloc[j, 1], City=data.iloc[j, 2],
+                                  Country=data.iloc[j, 3], IATA=data.iloc[j, 4],
+                                  ICAO=data.iloc[j, 5],
+                                  Latitude=data.iloc[j, 6], Longitude=data.iloc[j, 7],
+                                  Altitude=data.iloc[j, 8],
+                                  Timezone=data.iloc[j, 9],
+                                  DST=data.iloc[j, 10], Tz_database_time_zone=data.iloc[j, 11],
+                                  Type=data.iloc[j, 12],
+                                  Source=data.iloc[j, 13]))
 
-        if len(oct_lists[i]) > 1:
+    elif len(data) > 8:
+        global oct_lists_temp
+        oct_lists_temp = []
+        list_separator(data, 6, [parent.value_x, parent.value_y, parent.value_z])
+        oct_lists = oct_lists_temp
 
-            min_x = oct_lists[i].min()["Latitude"]
-            max_x = oct_lists[i].max()["Latitude"]
-            meso_x = (min_x + max_x) / 2
+        for k in range(8):
+            if len(oct_lists[k]) > 1:
+                if k == 0:
+                    temp_meso_x = (low_x + meso_x) / 2
+                    temp_meso_y = (low_y + meso_y) / 2
+                    temp_meso_z = (low_z + meso_z) / 2
+                    nodes_oct.append(
+                        Node('l' + str(len(nodes_oct)), parent=parent, position=k, value_x=temp_meso_x,
+                             value_y=temp_meso_y,
+                             value_z=temp_meso_z, low_x=low_x, high_x=meso_x, low_y=low_y, high_y=meso_y, low_z=low_z,
+                             high_z=meso_z))
+                    build_oct(oct_lists[k], nodes_oct[-1], low_x, meso_x, low_y, meso_y, low_z, meso_z, k, temp_meso_x,
+                              temp_meso_y, temp_meso_z)
+                elif k == 2:
+                    temp_meso_x = (low_x + meso_x) / 2
+                    temp_meso_y = (meso_y + high_y) / 2
+                    temp_meso_z = (low_z + meso_z) / 2
+                    nodes_oct.append(
+                        Node('l' + str(len(nodes_oct)), parent=parent, position=k, value_x=temp_meso_x,
+                             value_y=temp_meso_y,
+                             value_z=temp_meso_z, low_x=low_x, high_x=meso_x, low_y=meso_y, high_y=high_y, low_z=low_z,
+                             high_z=meso_z))
+                    build_oct(oct_lists[k], nodes_oct[-1], low_x, meso_x, meso_y, high_y, low_z, meso_z, k, temp_meso_x,
+                              temp_meso_y, temp_meso_z)
+                elif k == 4:
+                    temp_meso_x = (meso_x + high_x) / 2
+                    temp_meso_y = (low_y + meso_y) / 2
+                    temp_meso_z = (low_z + meso_z) / 2
+                    nodes_oct.append(
+                        Node('l' + str(len(nodes_oct)), parent=parent, position=k, value_x=temp_meso_x,
+                             value_y=temp_meso_y,
+                             value_z=temp_meso_z, low_x=meso_x, high_x=high_x, low_y=low_y, high_y=meso_y, low_z=low_z,
+                             high_z=meso_z))
+                    build_oct(oct_lists[k], nodes_oct[-1], meso_x, high_x, low_y, meso_y, low_z, meso_z, k, temp_meso_x,
+                              temp_meso_y, temp_meso_z)
+                elif k == 6:
+                    temp_meso_x = (meso_x + high_x) / 2
+                    temp_meso_y = (meso_y + high_y) / 2
+                    temp_meso_z = (low_z + meso_z) / 2
+                    nodes_oct.append(
+                        Node('l' + str(len(nodes_oct)), parent=parent, position=k, value_x=temp_meso_x,
+                             value_y=temp_meso_y,
+                             value_z=temp_meso_z, low_x=meso_x, high_x=high_x, low_y=meso_y, high_y=high_y, low_z=low_z,
+                             high_z=meso_z))
+                    build_oct(oct_lists[k], nodes_oct[-1], meso_x, high_x, meso_y, high_y, low_z, meso_z, k,
+                              temp_meso_x, temp_meso_y, temp_meso_z)
+                elif k == 1:
+                    temp_meso_x = (low_x + meso_x) / 2
+                    temp_meso_y = (low_y + meso_y) / 2
+                    temp_meso_z = (meso_z + high_z) / 2
+                    nodes_oct.append(
+                        Node('l' + str(len(nodes_oct)), parent=parent, position=k, value_x=temp_meso_x,
+                             value_y=temp_meso_y,
+                             value_z=temp_meso_z, low_x=low_x, high_x=meso_x, low_y=low_y, high_y=meso_y, low_z=meso_z,
+                             high_z=high_z))
+                    build_oct(oct_lists[k], nodes_oct[-1], low_x, meso_x, low_y, meso_y, meso_z, high_z, k, temp_meso_x,
+                              temp_meso_y, temp_meso_z)
+                elif k == 3:
+                    temp_meso_x = (low_x + meso_x) / 2
+                    temp_meso_y = (meso_y + high_y) / 2
+                    temp_meso_z = (meso_z + high_z) / 2
+                    nodes_oct.append(
+                        Node('l' + str(len(nodes_oct)), parent=parent, position=k, value_x=temp_meso_x,
+                             value_y=temp_meso_y,
+                             value_z=temp_meso_z, low_x=low_x, high_x=meso_x, low_y=meso_y, high_y=high_y, low_z=meso_z,
+                             high_z=high_z))
+                    build_oct(oct_lists[k], nodes_oct[-1], low_x, meso_x, meso_y, high_y, meso_z, high_z, k,
+                              temp_meso_x, temp_meso_y, temp_meso_z)
+                elif k == 5:
+                    temp_meso_x = (meso_x + high_x) / 2
+                    temp_meso_y = (low_y + meso_y) / 2
+                    temp_meso_z = (meso_z + high_z) / 2
+                    nodes_oct.append(
+                        Node('l' + str(len(nodes_oct)), parent=parent, position=k, value_x=temp_meso_x,
+                             value_y=temp_meso_y,
+                             value_z=temp_meso_z, low_x=meso_x, high_x=high_x, low_y=low_y, high_y=meso_y, low_z=meso_z,
+                             high_z=high_z))
+                    build_oct(oct_lists[k], nodes_oct[-1], meso_x, high_x, low_y, meso_y, meso_z, high_z, k,
+                              temp_meso_x, temp_meso_y, temp_meso_z)
+                elif k == 7:
+                    temp_meso_x = (meso_x + high_x) / 2
+                    temp_meso_y = (meso_y + high_y) / 2
+                    temp_meso_z = (meso_z + high_z) / 2
+                    nodes_oct.append(
+                        Node('l' + str(len(nodes_oct)), parent=parent, position=k, value_x=temp_meso_x,
+                             value_y=temp_meso_y,
+                             value_z=temp_meso_z, low_x=meso_x, high_x=high_x, low_y=meso_y, high_y=high_y,
+                             low_z=meso_z,
+                             high_z=high_z))
+                    build_oct(oct_lists[k], nodes_oct[-1], meso_x, high_x, meso_y, high_y, meso_z, high_z, k,
+                              temp_meso_x, temp_meso_y, temp_meso_z)
 
-            min_y = oct_lists[i].min()["Longitude"]
-            max_y = oct_lists[i].max()["Longitude"]
-            meso_y = (max_y + min_y) / 2
+            elif len(oct_lists[k]) == 1:
+                nodes_oct.append(Node('leaf ' + str(oct_lists[k].iloc[0, 0]), parent=parent, position=k,
+                                      Airport_ID=oct_lists[k].iloc[0, 0],
+                                      Name=oct_lists[k].iloc[0, 1], City=oct_lists[k].iloc[0, 2],
+                                      Country=oct_lists[k].iloc[0, 3], IATA=oct_lists[k].iloc[0, 4],
+                                      ICAO=oct_lists[k].iloc[0, 5],
+                                      Latitude=oct_lists[k].iloc[0, 6], Longitude=oct_lists[k].iloc[0, 7],
+                                      Altitude=oct_lists[k].iloc[0, 8],
+                                      Timezone=oct_lists[k].iloc[0, 9],
+                                      DST=oct_lists[k].iloc[0, 10], Tz_database_time_zone=oct_lists[k].iloc[0, 11],
+                                      Type=oct_lists[k].iloc[0, 12],
+                                      Source=oct_lists[k].iloc[0, 13]))
 
-            min_z = oct_lists[i].min()["Altitude"]
-            max_z = oct_lists[i].max()["Altitude"]
-            meso_z = (max_z + min_z) / 2
 
-            nodes_oct.append(Node('l' + str(len(nodes_oct)), parent=parent, position=i, value_x=meso_x, value_y=meso_y,
-                                  value_z=meso_z))
-            build_oct(oct_lists[i], nodes_oct[-1], meso_x, meso_y, meso_z)
 
-        elif len(oct_lists[i]) == 1:
-            nodes_oct.append(Node('leaf ' + str(oct_lists[i].iloc[0, 0]), parent=parent, position=i,
-                                  Airport_ID=oct_lists[i].iloc[0, 0],
-                                  Name=oct_lists[i].iloc[0, 1], City=oct_lists[i].iloc[0, 2],
-                                  Country=oct_lists[i].iloc[0, 3], IATA=oct_lists[i].iloc[0, 4],
-                                  ICAO=oct_lists[i].iloc[0, 5],
-                                  Latitude=oct_lists[i].iloc[0, 6], Longitude=oct_lists[i].iloc[0, 7],
-                                  Altitude=oct_lists[i].iloc[0, 8],
-                                  Timezone=oct_lists[i].iloc[0, 9],
-                                  DST=oct_lists[i].iloc[0, 10], Tz_database_time_zone=oct_lists[i].iloc[0, 11],
-                                  Type=oct_lists[i].iloc[0, 12],
-                                  Source=oct_lists[i].iloc[0, 13]))
+
+
+
+
+
+
 
 
