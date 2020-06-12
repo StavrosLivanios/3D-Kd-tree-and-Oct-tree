@@ -210,35 +210,3 @@ def oct_visual(data, parent, low_x, high_x, low_y, high_y, low_z, high_z,count,a
             elif i == 7:
                 oct_visual(oct_lists[i], "noroot", meso_x, high_x, meso_y, high_y, meso_z, high_z,count,ax)
 
-
-'''
-data = pd.read_csv("airports-extendedall.txt", sep=",", header=None)
-data.columns = ["Airport ID", "Name", "City", "Country", "IATA", "ICAO", "Latitude", "Longitude", "Altitude",
-                "Timezone", "DST", "Tz database time zone", "Type", "Source"]
-data.drop_duplicates(subset=("Latitude", "Longitude", "Altitude"), keep='first', inplace=True,
-                     ignore_index=True)
-
-
-import matplotlib.pyplot as plt
-fig = plt.figure()
-ax = plt.axes(projection='3d')
-ax.set_xlabel('X axis')
-ax.set_ylabel('Y axis')
-ax.set_zlabel('Z axis')
-#fig, ax = plt.subplots(1)
-kd_visual(data, 6, 0 , ax,"x",0,0,0,0,0,0)
-plt.show()
-
-
-#fig, ax = plt.subplots(1)
-
-fig = plt.figure()
-ax = plt.axes(projection='3d')
-ax.set_xlabel('oct X axis')
-ax.set_ylabel('oct Y axis')
-ax.set_zlabel('oct Z axis')
-
-oct_visual(data, "root",0 , 0, 0,0,0,0,0)
-plt.show()
-
-'''
