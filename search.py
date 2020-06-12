@@ -1,6 +1,7 @@
 from insert import find_position
 
 def search(nodes, point):
+    # find the point given by searching for each axis
     if nodes.is_leaf:
         if round(float(nodes.Latitude), 4) == round(float(point[0]), 4) and round(float(nodes.Longitude), 4) == round(float(point[1]), 4) and round(float(nodes.Altitude), 4) == round(float(point[2]), 4):
             res = nodes
@@ -21,6 +22,8 @@ def search(nodes, point):
 
 
 def search_oct(nodes, point):
+    # find the point given by searching for each axis
+
     position = find_position(point, [nodes.value_x, nodes.value_y, nodes.value_z])
     for i in nodes._NodeMixin__children:
         if i.position == position:

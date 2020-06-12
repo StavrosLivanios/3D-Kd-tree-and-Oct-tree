@@ -43,6 +43,7 @@ def find_position(point, meso_point):
 # -----------------------------------------------------------------------------------------------------------------------------------
 
 def list_separator(data, axis, point):
+    # configure axis point
     if axis == 6:
         point_cord = 0
     elif axis == 7:
@@ -52,13 +53,15 @@ def list_separator(data, axis, point):
     else:
         oct_lists_temp.append(data)
         return
-
+    # set columns names
     columns = ["Airport ID", "Name", "City", "Country", "IATA", "ICAO", "Latitude", "Longitude", "Altitude", "Timezone",
                "DST", "Tz database time zone", "Type", "Source"]
     data.sort_values(by=[str(columns[axis])], inplace=True, ignore_index=True)
     pin = data.iloc[:, axis]
     pin = pin.to_numpy()
     a = point[point_cord]
+
+    # divide dataframe into to sublists
     pinr = pd.DataFrame(columns=columns)
     pinl = pd.DataFrame(columns=columns)
     if len(pin) != 0:
@@ -151,6 +154,7 @@ def build_kd(data, axis, count, node, dir):
 # -----------------------------------------------------------------------------------------------------------------------------------
 
 def build_oct(data, parent, low_x, high_x, low_y, high_y, low_z, high_z, i ,meso_x,meso_y,meso_z):
+    # find middle value of  axis' edges
     if parent == "root":
         low_x = data.Latitude.min()
         high_x = data.Latitude.max()
@@ -170,7 +174,7 @@ def build_oct(data, parent, low_x, high_x, low_y, high_y, low_z, high_z, i ,meso
         min_z = data.min()["Altitude"]
         max_z = data.max()["Altitude"]
         meso_z = (max_z + min_z) / 2
-
+        # create node for each value
         nodes_oct.append(
             Node("root", value_x=meso_x, value_y=meso_y, value_z=meso_z, layout='sfdp', low_x=low_x, high_x=high_x,
                  low_y=low_y, high_y=high_y, low_z=low_z, high_z=high_z))
@@ -192,7 +196,7 @@ def build_oct(data, parent, low_x, high_x, low_y, high_y, low_z, high_z, i ,meso
                                   DST=data.iloc[j, 10], Tz_database_time_zone=data.iloc[j, 11],
                                   Type=data.iloc[j, 12],
                                   Source=data.iloc[j, 13]))
-
+    # call list separator for dataset
     elif len(data) > 8:
         global oct_lists_temp
         oct_lists_temp = []

@@ -4,6 +4,7 @@ from insert import insert_kd, insert_oct
 
 
 def update_kd(node_root, data, point):
+    # format given data
     data = data.replace(" ", "").split(",")
     for i in range(len(data)):
         data[i] = data[i].split("=")
@@ -13,6 +14,7 @@ def update_kd(node_root, data, point):
         return False
     temp_point = point.copy()
     change = 0
+    # search for changes in axes from input data
     for i in range(len(data)):
         atribute = data[i][0]
         value = data[i][1]
@@ -29,6 +31,7 @@ def update_kd(node_root, data, point):
             strr = "node." + atribute + " = " + "\"" + value + "\""
             exec(strr)
 
+    # call delete for removing node and use insert for updating the data in a new node
     if change == 1:
         temp = node
         delete_kd(node_root, point)
@@ -42,6 +45,7 @@ def update_kd(node_root, data, point):
 
 
 def update_oct(node_root, data, point):
+    # format input data
     data = data.replace(" ", "").split(",")
     for i in range(len(data)):
         data[i] = data[i].split("=")
@@ -51,6 +55,7 @@ def update_oct(node_root, data, point):
         return False
     temp_point = point.copy()
     change = 0
+    # search for changes in axes of input data
     for i in range(len(data)):
         atribute = data[i][0]
         value = data[i][1]
@@ -68,6 +73,7 @@ def update_oct(node_root, data, point):
             strr = "node." + atribute + " = " + "\"" + value + "\""
             exec(strr)
 
+    # call delete for removing the node and call insert for updating the with new data in a new node
     if change == 1:
         temp = node
         delete_oct(node_root, point)

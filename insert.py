@@ -13,6 +13,7 @@ def insert_leaf(name, ins_data, dir, parent, max_id, type_of_tree):
                    Timezone=ins_data[8],
                    DST=ins_data[9], Tz_database_time_zone=ins_data[10], Type=ins_data[11],
                    Source=ins_data[12])
+        # this does the same for oct
     elif type_of_tree == "oct":
         res = Node(name, parent=parent, position=dir, Airport_ID=max_id,
                    Name=ins_data[0], City=ins_data[1], Country=ins_data[2],
@@ -24,7 +25,7 @@ def insert_leaf(name, ins_data, dir, parent, max_id, type_of_tree):
                    Source=ins_data[12])
     return res
 
-
+#this function finds the exact position of each list in the tree
 def find_position(point, meso_point):
     if meso_point[0] >= float(point[0]) and meso_point[1] >= float(point[1]) and meso_point[2] >= float(
             point[2]):
@@ -146,6 +147,7 @@ def insert_oct(node_root, point, ins_data, max_id):
     position = find_position(point, [node_root.value_x, node_root.value_y, node_root.value_z])
 
     child = False
+    # Checking if node with this cordinates already exists
     for i in node_root.children:
         if i.position == position:
             if not i.is_leaf:

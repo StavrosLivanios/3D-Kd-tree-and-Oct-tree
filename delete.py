@@ -1,6 +1,7 @@
 from search import search, search_oct
 
 def find_max(node, axis_list, axis):
+    # create node for each axis
     if node.is_leaf:
         if axis == 6:
             axis_list.append(node.Latitude)
@@ -17,11 +18,13 @@ def find_max(node, axis_list, axis):
             find_max(node.children[1], axis_list, axis)
 
 def delete_me_and_make_my_brother_the_father(node, direction):
+    # find direction of node
 
     if direction == "left":
         temp_direction = 1
     elif direction == "right":
         temp_direction = 0
+    # change position of a children node depending on its direction and whether it's parent has a brother node or not
 
     node.parent.children[temp_direction].dir = node.parent.dir
     temp_name = node.parent.children[temp_direction].name.split()
@@ -66,7 +69,7 @@ def delete_kd(node_root, point):
     node = search(node_root, point)
     if not node:
         return False
-
+    # check if node have a brother and make his brother a parent node after nodes' deletion
     if len(node.siblings) == 0:
         node_to_delete = node.parent
         node.parent._NodeMixin__children = []
@@ -106,7 +109,7 @@ def delete_oct(node_root, point):
     node = search_oct(node_root, point)
     if not node:
         return False
-
+    # make the brother node a parent node after the node's deletion
     if len(node.parent._NodeMixin__children) == 2:
 
         node.siblings[0].position = node.parent.position
