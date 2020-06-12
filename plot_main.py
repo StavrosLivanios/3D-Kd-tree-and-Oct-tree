@@ -1,29 +1,11 @@
-import ast
-import os
-import sys
-import pandas as pd
-from anytree.exporter import DictExporter
-from anytree.exporter import DotExporter
-from anytree.importer import DictImporter
-from timeit import default_timer as timer
-# imports for KD and OCT trees
-from matplotlib import patches
-
-#from build import build_kd, nodes, build_oct, nodes_oct,values_kd_x,values_kd_y,values_kd_z
 
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-from anytree import Node
 
-nodes = []
-values_kd_x = []
-values_kd_y = []
-values_kd_z = []
-nodes_oct = []
+
 oct_lists_temp = []
 counter_list = 0
-
 
 # --------------------------------------------------LIST-SEPERATOR-------------------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------------------------------------
@@ -67,8 +49,9 @@ def list_separator(data, axis, point):
 # --------------------------------------------------KD-TREE-------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------------------
 
-def kd_visual(data, axis, count, ax,cut_axis,low_x,high_x,low_y,high_y):
-
+def kd_visual(data, axis, count, ax,cut_axis,low_x,high_x,low_y,high_y,low_z,high_z):
+    if len(data) == 0 :
+        return
     #print( str(low_x) +" "+  str(high_x) +" "+  str(low_y) +" "+ str(high_y))
 
     # sort the array by the axis that we use
@@ -97,82 +80,77 @@ def kd_visual(data, axis, count, ax,cut_axis,low_x,high_x,low_y,high_y):
 # -=======================================================
     # creation of root node of kd-tree
     if count == 0:
-        plt.scatter(data.Latitude, data.Longitude)
-        rect = patches.Rectangle((data.Latitude.min(), data.Longitude.min()), (data.Latitude.max() - data.Latitude.min()),  (data.Longitude.max()- data.Longitude.min()), linewidth=1, edgecolor='g', facecolor='none')
-        ax.add_patch(rect)
+        ax.scatter3D(data.Latitude, data.Longitude, data.Altitude, 'gray')
 
-        #rect = patches.Rectangle((data.Latitude.min() - 1, data.Longitude.min() - 2),(b - data.Latitude.min()) + 10, (data.Longitude.max() - data.Longitude.min()) + 10, linewidth=1, edgecolor='r',facecolor='none')
-
-
-
-        ax.add_patch(rect)
         low_x = data.Latitude.min()
         high_x = data.Latitude.max()
         low_y = data.Longitude.min()
         high_y = data.Longitude.max()
+        low_z = data.Altitude.min()
+        high_z = data.Altitude.max()
 
-        plt.plot([b, b], [low_y, high_y], "r",linewidth=3)
+        ax.plot3D((b, b), (low_y, high_y), (low_z, high_z), 'red', linewidth=3)
 
     else:
 
-        if axis != 8:
 
             if cut_axis == "x":
-                #rect = patches.Rectangle((low_x, low_y),(b - low_x),(high_y - low_y), linewidth=1, edgecolor='r',facecolor='none')
-                plt.plot([b,b],[low_y,high_y],"r", linewidth=2-(count * 0.2))
-                #ax.add_patch(rect)
+                ax.plot3D((b, b), (low_y, high_y), (low_z, high_z), 'red', linewidth=2-(count * 0.2))
+            elif cut_axis == "y":
+                ax.plot3D((low_x, high_x), (b, b), (low_z, high_z), 'blue', linewidth=2-(count * 0.2))
             else:
-                plt.plot([low_x, high_x], [b, b], "b", linewidth=2-(count * 0.2))
-                #rect = patches.Rectangle((low_x, low_y), (high_x - low_x), (b - low_y), linewidth=1, edgecolor='b', facecolor='none')
-                #ax.add_patch(rect)
-
-            #low_x = data.Latitude.min()
-            #high_x = data.Latitude.max()
-            #low_y = data.Longitude.min()
-            #high_y = data.Longitude.max()
-
+                ax.plot3D((low_x, high_x), (low_y, high_y), (b, b), 'green', linewidth=2-(count * 0.2))
 
     count = count + 1
-
     # Calculate the axis that the next ittaration will run for
-    if axis < 7:
+    if axis < 8:
         axis = axis + 1
     else:
         axis = 6
 
-
     if cut_axis == "x":
         cut_axis = "y"
         if len(pinl) >1:
-            kd_visual(pinl, axis, count, ax, cut_axis, low_x, b, low_y, high_y)
+            kd_visual(pinl, axis, count, ax, cut_axis, low_x, b, low_y, high_y,low_z,high_z)
 
         if len(pinr) > 1:
-            kd_visual(pinr, axis, count, ax, cut_axis, b, high_x, low_y, high_y)
+            kd_visual(pinr, axis, count, ax, cut_axis, b, high_x, low_y, high_y,low_z,high_z)
 
-    else:
+    elif cut_axis=="y":
+        cut_axis = "z"
+        if len(pinl) > 1:
+            kd_visual(pinr, axis, count, ax, cut_axis, low_x, high_x, b, high_y,low_z,high_z)
+
+        if len(pinr) > 1:
+            kd_visual(pinl, axis, count, ax, cut_axis, low_x, high_x, low_y, b,low_z,high_z)
+
+    elif cut_axis == "z":
         cut_axis = "x"
         if len(pinl) > 1:
-            kd_visual(pinr, axis, count, ax, cut_axis, low_x, high_x, b, high_y)
+            kd_visual(pinr, axis, count, ax, cut_axis, low_x, high_x, low_y, high_y,b,high_z)
 
         if len(pinr) > 1:
-            kd_visual(pinl, axis, count, ax, cut_axis, low_x, high_x, low_y, b)
-
+            kd_visual(pinl, axis, count, ax, cut_axis, low_x, high_x, low_y, high_y,low_z,b)
 # --------------------------------------------------OCT-TREE-------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------------------------------------
 
 
-def oct_visual(data, parent, low_x, high_x, low_y, high_y, low_z, high_z,count):
+def oct_visual(data, parent, low_x, high_x, low_y, high_y, low_z, high_z,count,ax):
     count = count + 1
     if parent == "root":
+        ax.scatter3D(data.Latitude, data.Longitude, data.Altitude, 'gray')
+        #ax.plot3D((data.Latitude.min(), data.Longitude.min(),  data.Latitude.min()), (data.Latitude.min(), data.Longitude.max(),  data.Latitude.max()), 'gray')
 
-        plt.scatter(data.Latitude, data.Longitude)
-        rect = patches.Rectangle((data.Latitude.min(), data.Longitude.min()), (data.Latitude.max() - data.Latitude.min()),  (data.Longitude.max()- data.Longitude.min()), linewidth=1, edgecolor='g', facecolor='none')
-        ax.add_patch(rect)
+        #plt.scatter(data.Latitude, data.Longitude)
+        #rect = patches.Rectangle((data.Latitude.min(), data.Longitude.min()), (data.Latitude.max() - data.Latitude.min()),  (data.Longitude.max()- data.Longitude.min()), linewidth=1, edgecolor='g', facecolor='none')
+        #ax.add_patch(rect)
 
         low_x = data.Latitude.min()
         high_x = data.Latitude.max()
         low_y = data.Longitude.min()
         high_y = data.Longitude.max()
+        low_z = data.Altitude.min()
+        high_z = data.Altitude.max()
 
         min_x = data.min()["Latitude"]
         max_x = data.max()["Latitude"]
@@ -186,9 +164,9 @@ def oct_visual(data, parent, low_x, high_x, low_y, high_y, low_z, high_z,count):
         max_z = data.max()["Altitude"]
         meso_z = (max_z + min_z) / 2
 
-        plt.plot([meso_x, meso_x], [low_y, high_y], "r", linewidth=3)
-        plt.plot([low_x, high_x], [meso_y, meso_y], "b", linewidth=3)
-
+        ax.plot3D((meso_x, meso_x),(low_y, high_y), (low_z, high_z), 'red',linewidth=3)
+        ax.plot3D((low_x, high_x),(meso_y, meso_y), (meso_z, meso_z), 'blue',linewidth=3)
+        ax.plot3D((low_x, high_x), (low_y, high_y), (meso_z, meso_z), 'green',linewidth=3)
     else:
         min_x = low_x
         max_x = high_x
@@ -202,8 +180,9 @@ def oct_visual(data, parent, low_x, high_x, low_y, high_y, low_z, high_z,count):
         max_z = high_z
         meso_z = (max_z + min_z) / 2
 
-        plt.plot([meso_x, meso_x], [low_y, high_y], "r", linewidth=2-(count * 0.2))
-        plt.plot([low_x, high_x], [meso_y, meso_y], "b", linewidth=2-(count * 0.2))
+        ax.plot3D((meso_x, meso_x), (low_y, high_y), (low_z, high_z), 'red', linewidth=2.5-(count * 0.3))
+        ax.plot3D((low_x, high_x), (meso_y, meso_y), (meso_z, meso_z), 'blue', linewidth=2.5-(count * 0.3))
+        ax.plot3D((low_x, high_x), (low_y, high_y), (meso_z, meso_z), 'green', linewidth=2.5-(count * 0.3))
 
     global oct_lists_temp
     oct_lists_temp = []
@@ -215,35 +194,51 @@ def oct_visual(data, parent, low_x, high_x, low_y, high_y, low_z, high_z,count):
 
         if len(oct_lists[i]) > 8:
             if i == 0:
-                oct_visual(oct_lists[i], "noroot", low_x, meso_x, low_y, meso_y, low_z, meso_z,count)
+                oct_visual(oct_lists[i], "noroot", low_x, meso_x, low_y, meso_y, low_z, meso_z,count,ax)
             elif i == 2:
-                oct_visual(oct_lists[i], "noroot", low_x, meso_x, meso_y, high_y, low_z, meso_z,count)
+                oct_visual(oct_lists[i], "noroot", low_x, meso_x, meso_y, high_y, low_z, meso_z,count,ax)
             elif i == 4:
-                oct_visual(oct_lists[i], "noroot", meso_x, high_x, low_y, meso_y, low_z, meso_z,count)
+                oct_visual(oct_lists[i], "noroot", meso_x, high_x, low_y, meso_y, low_z, meso_z,count,ax)
             elif i == 6:
-                oct_visual(oct_lists[i], "noroot", meso_x, high_x, meso_y, high_y, low_z, meso_z,count)
+                oct_visual(oct_lists[i], "noroot", meso_x, high_x, meso_y, high_y, low_z, meso_z,count,ax)
             elif i == 1:
-                oct_visual(oct_lists[i], "noroot", low_x, meso_x, low_y, meso_y, meso_z, high_z,count)
+                oct_visual(oct_lists[i], "noroot", low_x, meso_x, low_y, meso_y, meso_z, high_z,count,ax)
             elif i == 3:
-                oct_visual(oct_lists[i], "noroot", low_x, meso_x, meso_y, high_y, meso_z, high_z,count)
+                oct_visual(oct_lists[i], "noroot", low_x, meso_x, meso_y, high_y, meso_z, high_z,count,ax)
             elif i == 5:
-                oct_visual(oct_lists[i], "noroot", meso_x, high_x, low_y, meso_y, meso_z, high_z,count)
+                oct_visual(oct_lists[i], "noroot", meso_x, high_x, low_y, meso_y, meso_z, high_z,count,ax)
             elif i == 7:
-                oct_visual(oct_lists[i], "noroot", meso_x, high_x, meso_y, high_y, meso_z, high_z,count)
+                oct_visual(oct_lists[i], "noroot", meso_x, high_x, meso_y, high_y, meso_z, high_z,count,ax)
 
 
-
-data = pd.read_csv("airports-extended100.txt", sep=",", header=None)
+'''
+data = pd.read_csv("airports-extendedall.txt", sep=",", header=None)
 data.columns = ["Airport ID", "Name", "City", "Country", "IATA", "ICAO", "Latitude", "Longitude", "Altitude",
                 "Timezone", "DST", "Tz database time zone", "Type", "Source"]
 data.drop_duplicates(subset=("Latitude", "Longitude", "Altitude"), keep='first', inplace=True,
                      ignore_index=True)
-fig, ax = plt.subplots(1)
-kd_visual(data, 6, 0 , ax,"x",0,0,0,0)
+
+
+import matplotlib.pyplot as plt
+fig = plt.figure()
+ax = plt.axes(projection='3d')
+ax.set_xlabel('X axis')
+ax.set_ylabel('Y axis')
+ax.set_zlabel('Z axis')
+#fig, ax = plt.subplots(1)
+kd_visual(data, 6, 0 , ax,"x",0,0,0,0,0,0)
 plt.show()
 
 
-fig, ax = plt.subplots(1)
+#fig, ax = plt.subplots(1)
+
+fig = plt.figure()
+ax = plt.axes(projection='3d')
+ax.set_xlabel('oct X axis')
+ax.set_ylabel('oct Y axis')
+ax.set_zlabel('oct Z axis')
+
 oct_visual(data, "root",0 , 0, 0,0,0,0,0)
 plt.show()
 
+'''
