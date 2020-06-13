@@ -16,7 +16,6 @@ from search import search, search_oct
 from update import update_kd, update_oct
 
 sys.setrecursionlimit(20000)
-# os.environ["PATH"] += os.pathsep + 'C:\Program Files (x86)\Graphviz2.38\\bin\\'
 
 max_id = 0
 max_id_oct = 0
@@ -164,7 +163,6 @@ while True:
         print(end - start)
         if not res:
             print("The point already exist")
-        # DotExporter(nodes_oct[0]).to_picture("insert.png")
 
     # ===================================================================================================================
 
@@ -176,7 +174,7 @@ while True:
         x = x.split(",")
         point = [float(x[0]), float(x[1]), float(x[2])]
         print(
-            "Give the new data that are going to be updated  on the node  separated by ','  (E.g NAME = 'Benizelos'_, Longtitude = 34,454353,..._)")
+            "Give the new data that are going to be updated  on the node  separated by ','  (E.g NAME = 'Benizelos'_, Longtitude = 34.454353,..._)")
         data_upt = input()
 
         if tree_choice == 1:

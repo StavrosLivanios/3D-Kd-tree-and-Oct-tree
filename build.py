@@ -10,7 +10,8 @@ nodes_oct = []
 oct_lists_temp = []
 counter_list = 0
 
-
+#This function returns the hypothetical position of the point inside the cube that is seperated in 8 subspaces
+#position refers to the subspace that the point belongs  
 def find_position(point, meso_point):
     if meso_point[0] >= float(point[0]) and meso_point[1] >= float(point[1]) and meso_point[2] >= float(
             point[2]):
@@ -41,7 +42,8 @@ def find_position(point, meso_point):
 
 # --------------------------------------------------LIST-SEPERATOR-------------------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------------------------------------
-
+#In each ittaration we divede the points to two lists until we get 8 sublists that 
+#each one refers to the corresponding subspaces
 def list_separator(data, axis, point):
     # configure axis point
     if axis == 6:
@@ -84,10 +86,10 @@ def list_separator(data, axis, point):
 # --------------------------------------------------KD-TREE-------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------------------
 
+# In this function we build the Kd tree by taking the dataset and dividing it recursively
+# in two lists(that they represent the branches of the tree) separeted by their median point. Each time we separate we create a new node until 
+# the lenght of the lists is 2  in wich case we create a right and left leaf.
 def build_kd(data, axis, count, node, dir):
-    # sort the array by the axis that we use
-    # and take an array only with the axis we will use
-    # and transform them in the state we need
     columns = ["Airport ID", "Name", "City", "Country", "IATA", "ICAO", "Latitude", "Longitude", "Altitude", "Timezone",
                "DST", "Tz database time zone", "Type", "Source"]
     data.sort_values(by=[str(columns[axis])], inplace=True, ignore_index=True)
@@ -112,20 +114,22 @@ def build_kd(data, axis, count, node, dir):
     # creation of root node of kd-tree
     if count == 0:
         nodes.append(Node("root", axis=axis, value=b, layout='sfdp'))
-    # creation of nodes
+    # creation of node
     elif len(data) >= 2:
         nodes.append(Node('l' + str(len(nodes)), parent=node, axis=axis, value=b, dir=dir))
 
     count = count + 1
 
-    # Calculate the axis that the next ittaration will run for
+    # Calculate the axis that the next ittaration will run for(6 is x , 7 is y , 8 is z)
     if axis < 8:
         axis = axis + 1
     else:
         axis = 6
 
-    # Call the recursing funchion for the next step
-    # or creqate the leaf
+    # Call the recursing function for the next step
+    # or create the leaf
+    # We call the function for the left subtree(with pinl) 
+    # and for the right (with pinr) 
     x = nodes[-1]
     if len(pinl) > 1:
         build_kd(pinl, axis, count, x, "left")
@@ -152,9 +156,12 @@ def build_kd(data, axis, count, node, dir):
 
 # --------------------------------------------------OCT-TREE-------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------------------------------------
-
+# In this function we build the Oct tree by taking the dataset and dividing it recursively
+# in eight lists(that they represent the subspaces of the cube) separeted by their middle points(x,y,z). Each time we separate we create a new node until 
+# the lenght of the lists is 8 or less  in wich case we create leafs.
 def build_oct(data, parent, low_x, high_x, low_y, high_y, low_z, high_z, i ,meso_x,meso_y,meso_z):
     # find middle value of  axis' edges
+    # and initialize the edges of the first cube
     if parent == "root":
         low_x = data.Latitude.min()
         high_x = data.Latitude.max()
@@ -174,14 +181,15 @@ def build_oct(data, parent, low_x, high_x, low_y, high_y, low_z, high_z, i ,meso
         min_z = data.min()["Altitude"]
         max_z = data.max()["Altitude"]
         meso_z = (max_z + min_z) / 2
-        # create node for each value
+        
+        # create node root
         nodes_oct.append(
             Node("root", value_x=meso_x, value_y=meso_y, value_z=meso_z, layout='sfdp', low_x=low_x, high_x=high_x,
                  low_y=low_y, high_y=high_y, low_z=low_z, high_z=high_z))
         parent = nodes_oct[-1]
 
 
-
+    #If the lenght of the list is 8 or less we create the leafs
     if (len(data) <= 8) and (len(data) > 0):
         for j in range(len(data)):
             pos = find_position([float(data.iloc[j, 6]), float(data.iloc[j, 7]), float(data.iloc[j, 8])],[parent.value_x, parent.value_y, parent.value_z])
@@ -196,14 +204,23 @@ def build_oct(data, parent, low_x, high_x, low_y, high_y, low_z, high_z, i ,meso
                                   DST=data.iloc[j, 10], Tz_database_time_zone=data.iloc[j, 11],
                                   Type=data.iloc[j, 12],
                                   Source=data.iloc[j, 13]))
-    # call list separator for dataset
+                                  
+    # call list separator to seperate the cube to the 8 subspaces
     elif len(data) > 8:
         global oct_lists_temp
         oct_lists_temp = []
         list_separator(data, 6, [parent.value_x, parent.value_y, parent.value_z])
         oct_lists = oct_lists_temp
 
+        #For each list returned from list_separator we calculate the new subcube dimensions 
+        #and we create the node that will represent it. We call the build_oct function with the new dimensions of the new subspace.
         for k in range(8):
+        
+        # subspace -->  0:front lower left  (k==0) | 1:back lower left  (k==1)
+        #               2:front upper left  (k==2) | 3:back upper left  (k==3)
+        #               4:front lower right (k==4) | 5:back lower right (k==5)
+        #               6:front upper right (k==6) | 7:back upper right (k==7)
+        
             if len(oct_lists[k]) > 1:
                 if k == 0:
                     temp_meso_x = (low_x + meso_x) / 2

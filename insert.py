@@ -5,6 +5,7 @@ from copy import copy
 # This funchions creates a leaf
 def insert_leaf(name, ins_data, dir, parent, max_id, type_of_tree):
     if type_of_tree == "kd":
+        print("hello")
         res = Node(name, parent=parent, dir=dir, Airport_ID=max_id,
                    Name=ins_data[0], City=ins_data[1], Country=ins_data[2],
                    IATA=ins_data[3],
@@ -59,7 +60,7 @@ def find_position(point, meso_point):
 def insert_kd(node_root, point, ins_data, max_id):
     max_id = max_id + 1
     # insert is like search at the core so we search for the position to insert
-    # if we find a leaf then either the point already exists or we have to vreate a new node and put both under it
+    # if we find a leaf then either the point already exists or we have to create a new node and put both under it
     if node_root.is_leaf:
         # Checking if point already exist in tree
         if round(float(node_root.Latitude), 4) == round(float(point[0]), 4) and \
@@ -95,9 +96,9 @@ def insert_kd(node_root, point, ins_data, max_id):
             temp_childs[node_dir] = new_node
             old_parent._NodeMixin__children = temp_childs
 
-            # This if is just so the names are correct(leaf_left - leaf_righ)
+            # This if is just so the names are correct(leaf_left - leaf_right)
             # and have the right variables in the node
-            if round(float(sibling_point[axis])) >= round(point[axis]):
+            if round(float(sibling_point[axis]), 4) >= round(point[axis], 4):
                 node_root.dir = "right"
                 node_root.name = "leaf_" + node_root.dir + " " + node_root.name.split()[1]
                 nodes.append(insert_leaf('leaf_Left ' + str(max_id), ins_data, "left", node_root.parent, max_id, "kd"))
@@ -105,19 +106,24 @@ def insert_kd(node_root, point, ins_data, max_id):
                 new_node._NodeMixin__children[1] = new_node._NodeMixin__children[0]
                 new_node._NodeMixin__children[0] = temp
 
-            elif round(float(sibling_point[axis])) < round(point[axis]):
+            elif round(float(sibling_point[axis]), 4) < round(point[axis], 4):
                 node_root.dir = "left"
                 node_root.name = "leaf_" + node_root.dir + " " + node_root.name.split()[1]
-                nodes.append(
-                    insert_leaf('leaf_right ' + str(max_id), ins_data, "right", node_root.parent, max_id, "kd"))
+                nodes.append(insert_leaf('leaf_right ' + str(max_id), ins_data, "right", node_root.parent, max_id, "kd"))
+                if new_node.axis == 6:
+                    new_node.value = node_root.Latitude
+                elif new_node.axis == 7:
+                    new_node.value = node_root.Longitude
+                else:
+                    new_node.value = node_root.Altitude
 
             res = new_node
 
     else:
         axis = node_root.depth % 3
 
-        # We search for the postition toi put the node we want to inser
-        # if the value of the x,y,or z is greater than then we go to the right side of the tree
+        # We search for the postition toi put the node we want to insert
+        # if the value of the x,y,or z is greater then we go to the right side of the tree
         if round(float(node_root.value), 4) >= round(float(point[axis]), 4):
             # If there is nothing on this side and we want to isnert a node we just create a new node here
             if len(node_root.children) == 0:
@@ -147,7 +153,8 @@ def insert_oct(node_root, point, ins_data, max_id):
     position = find_position(point, [node_root.value_x, node_root.value_y, node_root.value_z])
 
     child = False
-    # Checking if node with this cordinates already exists
+    # When visiting a node we search for nodes or leafs with the position that the leaf we want to insert should have(according to x,y,z values of the node we are visiting)
+    # if the postion maches a node we follow and visit it. If its a leaf we check if it already exists.
     for i in node_root.children:
         if i.position == position:
             if not i.is_leaf:
@@ -160,13 +167,14 @@ def insert_oct(node_root, point, ins_data, max_id):
         res = insert_oct(child, point, ins_data, max_id)
         return res
     else:
+    # If the node we want to insert the new leaf has 8 children then we must separete again the cube in 8 subspaces
         if len(node_root.children) >= 8:
             ins_node = insert_leaf('leaf ' + str(max_id), ins_data, position, node_root, max_id, "oct")
             nodes_oct.append(ins_node)
             res = ins_node
 
             split_leafs(node_root)
-
+    # If the children are 7 or less we just add the new leaf
         else:
             nodes_oct.append(insert_leaf('leaf ' + str(max_id), ins_data, position, node_root, max_id, "oct"))
             res = nodes_oct[-1]
@@ -176,6 +184,7 @@ def insert_oct(node_root, point, ins_data, max_id):
 
 #===================================================================================================================================
 
+# We use this function to create a new leaf
 def create_leaf_insert(node_root,i,temp_meso_x,temp_meso_y,temp_meso_z):
     nodes_oct.append(
         Node('l' + str(len(nodes_oct)), parent=node_root, position=i, value_x=temp_meso_x,
@@ -186,8 +195,12 @@ def create_leaf_insert(node_root,i,temp_meso_x,temp_meso_y,temp_meso_z):
              high_z=node_root.value_z))
 
 
+# In this function we separate the 8 children of a node we want to add a new leaf 
+# so that every child with the same postion will go under a new node representing 
+# a subspace of the original cube we want to separate
 def split_leafs(node_root):
     num_per_pos = [0, 0, 0, 0, 0, 0, 0, 0]
+    # we count how many childs from every position we have (more than one means it needs to create a new node for that subaspace)
     for i in node_root.children:
         num_per_pos[i.position] = num_per_pos[i.position] + 1
 
@@ -257,6 +270,8 @@ def split_leafs(node_root):
                         j.parent = temp_parent
                         temp_childs_cp.remove(j)
             temp_childs = temp_childs_cp
-
+            
+            # If after the separation of the childs they are still more than 8 under a new node that means we need to 
+            # keep dividing the subspace untill it fits the oct-tree critiria
             while len(temp_parent.children)>8:
                 split_leafs(temp_parent)

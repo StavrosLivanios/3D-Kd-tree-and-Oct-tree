@@ -1,5 +1,8 @@
 from insert import find_position
 
+ # Recursive function that is visiting nodes and compares the x,y or z value 
+ # to decide if is going to move to the left or the right subtree. After it reaches a leaf 
+ # it compares the values and retruns the node or false if the leaf was not the same.
 def search(nodes, point):
     # find the point given by searching for each axis
     if nodes.is_leaf:
@@ -20,7 +23,9 @@ def search(nodes, point):
         res = search(child, point)
     return res
 
-
+# Check recurcively on the nodes you visit if their is a node with the same 
+# position that the node you are searching for should have in this node.
+# Follow it if its a node or check the value if it is a leaf.
 def search_oct(nodes, point):
     # find the point given by searching for each axis
 

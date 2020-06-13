@@ -14,7 +14,8 @@ def update_kd(node_root, data, point):
         return False
     temp_point = point.copy()
     change = 0
-    # search for changes in axes from input data
+    # search for changes in axes from input data(if change exists then node will be deleted and inserted)
+    # Change the value for the other arguments given in the input 
     for i in range(len(data)):
         atribute = data[i][0]
         value = data[i][1]
@@ -55,7 +56,8 @@ def update_oct(node_root, data, point):
         return False
     temp_point = point.copy()
     change = 0
-    # search for changes in axes of input data
+    # search for changes in axes from input data(if change exists then node will be deleted and inserted)
+    # Change the value for the other arguments given in the input 
     for i in range(len(data)):
         atribute = data[i][0]
         value = data[i][1]
