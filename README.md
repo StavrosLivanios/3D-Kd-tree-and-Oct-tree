@@ -9,3 +9,9 @@ This method of separation improves the time needed to search and do other operat
 The program offered 3D visualization of the entries and how the tree divided
 them in subtrees. The goal of the project was to compare the performance of these two tree
 structures based on time.
+
+Dependencies
+• anytree version = 3.2.1
+• matplotlib version = 3.2.1
+• pandas version = 1.0.1
+• numpy version = 1.18.1
