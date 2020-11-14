@@ -11,7 +11,7 @@ them in subtrees. The goal of the project was to compare the performance of thes
 structures based on time.
 
 Dependencies
-• anytree version = 3.2.1
+• anytree version = 3.2.1 
 • matplotlib version = 3.2.1
 • pandas version = 1.0.1
 • numpy version = 1.18.1
