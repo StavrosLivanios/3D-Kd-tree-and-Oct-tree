@@ -2,7 +2,7 @@
 
 3D-Data bases (OCT-TREE , KD-TREE)
 Operations available : Search, update, delete, insert, store, upload, view.
-![alt text](https://github.com/StavrosLivanios/3D-Kd-tree-and-Oct-tree/blob/master/pics/2.PNG?raw=true)
+
 
 Multidimensional databases for storing the airports of the world using tree structures. 
 ![alt text](https://github.com/StavrosLivanios/3D-Kd-tree-and-Oct-tree/blob/master/pics/1.PNG?raw=true)
@@ -16,7 +16,7 @@ structures based on time.
 
 ![alt text](https://github.com/StavrosLivanios/3D-Kd-tree-and-Oct-tree/blob/master/pics/5.PNG?raw=true)
 ![alt text](https://github.com/StavrosLivanios/3D-Kd-tree-and-Oct-tree/blob/master/pics/4.PNG?raw=true)
-![alt text](https://github.com/StavrosLivanios/3D-Kd-tree-and-Oct-tree/blob/master/pics/6.PNG?raw=true)
+![alt text](https://github.com/StavrosLivanios/3D-Kd-tree-and-Oct-tree/blob/master/pics/3.PNG?raw=true)
 
 Dependencies
 • anytree version = 3.2.1 
